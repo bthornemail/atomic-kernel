@@ -93,6 +93,12 @@ See [docs/api-reference.md](./docs/api-reference.md) for contracts and examples.
 - Conformance contract: [docs/conformance.md](./docs/conformance.md)
 - Claim policy: [docs/publication-claims.md](./docs/publication-claims.md)
 
+## Author Intent
+This project is published as a serious, good-faith attempt to address a shared systems problem with deterministic, testable methods.
+Claims are limited to what can be reproduced with the repository commands and fixtures today.
+Future behavior is treated as open and must be re-verified over time.
+The goal is practical collaboration on a verifiable artifact, not certainty beyond current evidence.
+
 ## License and Notice
 - License: [CC0 1.0 Universal](./LICENSE)
 - Notice and legal context: [NOTICE](./NOTICE)
