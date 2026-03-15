@@ -3,6 +3,10 @@ __pycache__/
 *.pyo
 *.pyd
 .DS_Store
+.venv/
+aztec-proof/
+aztec-proof-test/
+aztec-bundle-test/
 dev-docs/*.mp4
 dev-docs/*.m4a
 dev-docs/*.png

@@ -41,6 +41,13 @@ Open the dashboard at `http://127.0.0.1:8080`.
 # Create proof-layer payload sets (control codes, algorithms, full artifact)
 ./ak aztec-proof --outdir aztec-proof
 
+# One-time renderer setup
+python3 -m venv .venv
+.venv/bin/pip install aztec-code-generator pillow
+
+# Render proof PNG images for README/docs
+./ak aztec-images --proof-dir aztec-proof
+
 # Reconstruct artifact from chunk files
 ./ak aztec-unpack --indir aztec-bundle --output aztec-bundle/recovered.json
 

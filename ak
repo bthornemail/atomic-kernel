@@ -8,6 +8,7 @@ Usage:
   ./ak all          # verify then serve
   ./ak aztec-pack   # create Aztec chunk bundle from replay artifact
   ./ak aztec-proof  # create control/algorithms/full proof bundles
+  ./ak aztec-images # render README PNGs from proof bundles
   ./ak aztec-unpack # reconstruct artifact from Aztec chunk bundle
 """
 
@@ -19,6 +20,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
+VENV_PY = ROOT / ".venv" / "bin" / "python"
 
 
 def run(cmd: list[str]) -> int:
@@ -49,7 +51,7 @@ def main() -> int:
         "command",
         nargs="?",
         default="serve",
-        choices=["serve", "verify", "all", "aztec-pack", "aztec-proof", "aztec-unpack"],
+        choices=["serve", "verify", "all", "aztec-pack", "aztec-proof", "aztec-images", "aztec-unpack"],
         help="serve, verify, run all, or use Aztec bundle pack/unpack",
     )
     parser.add_argument("--mode", default="16d", choices=["kernel", "16d"])
@@ -64,6 +66,7 @@ def main() -> int:
     parser.add_argument("--codeword-bits", type=int, default=8, choices=[6, 8, 10, 12])
     parser.add_argument("--no-stuffing", action="store_true")
     parser.add_argument("--outdir", default="aztec-bundle")
+    parser.add_argument("--proof-dir", default="aztec-proof")
     parser.add_argument("--indir", default="aztec-bundle")
     parser.add_argument("--output", default="aztec-bundle/recovered.json")
     args = parser.parse_args()
@@ -144,6 +147,18 @@ def main() -> int:
                 args.indir,
                 "--output",
                 args.output,
+            ]
+        )
+    if args.command == "aztec-images":
+        py = str(VENV_PY) if VENV_PY.exists() else sys.executable
+        return run(
+            [
+                py,
+                "render_aztec.py",
+                "--proof-dir",
+                args.proof_dir,
+                "--outdir",
+                "docs/assets",
             ]
         )
 

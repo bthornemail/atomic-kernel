@@ -36,6 +36,13 @@ Open dashboard: `http://127.0.0.1:8080`
 # Build proof-layer bundles (control codes, algorithms, full artifact)
 ./ak aztec-proof --outdir aztec-proof
 
+# One-time renderer setup
+python3 -m venv .venv
+.venv/bin/pip install aztec-code-generator pillow
+
+# Render README PNGs from proof bundles (uses .venv aztec renderer)
+./ak aztec-images --proof-dir aztec-proof
+
 # Reconstruct artifact from scanned chunk files
 ./ak aztec-unpack --indir aztec-bundle --output aztec-bundle/recovered.json
 ```
@@ -53,6 +60,12 @@ Each set contains:
 - `chunks.ndjson` (line-delimited chunk payloads for batch encoding)
 
 Encode each chunk JSON as one Aztec symbol with your encoder of choice, then scan/decode back to JSON and run `./ak aztec-unpack` to verify reconstruction and digest integrity.
+
+| Image | Contains | Scan |
+|---|---|---|
+| **Control Codes** | UTF-EBCDIC control-plane contract | ![control-codes](docs/assets/aztec-control-codes.png) |
+| **Algorithms** | `AK-ALG-01` through `AK-ALG-04` | ![algorithms](docs/assets/aztec-algorithms.png) |
+| **Full Artifact** | Full replay artifact chunk set (stacked) | ![full](docs/assets/aztec-full.png) |
 
 ## API Surface
 - `POST /replay`
