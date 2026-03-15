@@ -10,6 +10,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from api_server import run_server
 from authority import authorize
+from aztec_bundle import build_bundle, recover_bundle
 from canonical import canonical_hash, digest_bytes, parse_tagged_digest
 from control_plane import validate_control_plane
 from replay_engine import replay_artifact
@@ -95,6 +96,13 @@ class V1Tests(unittest.TestCase):
         self.assertEqual(len(hx), 64)
         with self.assertRaises(ValueError):
             parse_tagged_digest("" + "a" * 64)
+
+    def test_aztec_bundle_roundtrip(self):
+        artifact = replay_artifact("16d", 32, 0x0B7406AC, 16).as_dict()
+        manifest, chunks = build_bundle(artifact, chunk_bytes=400)
+        out = recover_bundle(manifest, chunks)
+        self.assertEqual(out, artifact)
+        self.assertEqual(manifest["canonicalization"], "stream-sign-value-v1")
 
 
 class APITests(unittest.TestCase):

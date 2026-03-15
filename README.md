@@ -29,6 +29,12 @@ Open dashboard: `http://127.0.0.1:8080`
 
 # Verify, then start server
 ./ak all
+
+# Build scan-ready Aztec chunk payloads from replay artifact
+./ak aztec-pack --mode 16d --width 32 --seed 0x0B7406AC --steps 64 --outdir aztec-bundle
+
+# Reconstruct artifact from scanned chunk files
+./ak aztec-unpack --indir aztec-bundle --output aztec-bundle/recovered.json
 ```
 
 ## API Surface

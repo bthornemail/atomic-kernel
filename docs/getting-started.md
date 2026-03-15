@@ -35,6 +35,12 @@ Open the dashboard at `http://127.0.0.1:8080`.
 # Verify, then start server
 ./ak all
 
+# Create Aztec chunk payloads from a replay artifact
+./ak aztec-pack --mode 16d --width 32 --seed 0x0B7406AC --steps 64 --outdir aztec-bundle
+
+# Reconstruct artifact from chunk files
+./ak aztec-unpack --indir aztec-bundle --output aztec-bundle/recovered.json
+
 # Optional direct suite
 python3 tests/test_v1.py
 
