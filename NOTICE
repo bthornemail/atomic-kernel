@@ -1,0 +1,15 @@
+Atomic Kernel
+
+License
+- This repository is licensed under the MIT License. See `LICENSE`.
+
+Aztec Code Notice
+- Aztec Code technology was historically covered by U.S. Patent 5,591,956.
+- This project provides implementation artifacts and interoperability tooling.
+- Users are responsible for validating legal status in their deployment
+  jurisdiction and date.
+
+Third-Party Components
+- `aztec-code-generator` and `Pillow` are used for optional image rendering in
+  local development workflows (`./ak aztec-images`).
+- See each dependency's license terms in its distribution metadata.

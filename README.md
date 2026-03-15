@@ -81,3 +81,7 @@ See [docs/api-reference.md](./docs/api-reference.md) for contracts and examples.
 - Normative implementation guidance: [docs/concepts.md](./docs/concepts.md)
 - Conformance contract: [docs/conformance.md](./docs/conformance.md)
 - Claim policy: [docs/publication-claims.md](./docs/publication-claims.md)
+
+## License and Notice
+- License: [MIT](./LICENSE)
+- Notice and legal context: [NOTICE](./NOTICE)
