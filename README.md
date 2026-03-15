@@ -83,5 +83,5 @@ See [docs/api-reference.md](./docs/api-reference.md) for contracts and examples.
 - Claim policy: [docs/publication-claims.md](./docs/publication-claims.md)
 
 ## License and Notice
-- License: [MIT](./LICENSE)
+- License: [CC0 1.0 Universal](./LICENSE)
 - Notice and legal context: [NOTICE](./NOTICE)

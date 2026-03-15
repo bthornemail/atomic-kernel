@@ -1,13 +1,29 @@
 Atomic Kernel
 
-License
-- This repository is licensed under the MIT License. See `LICENSE`.
+Sovereignty Statement
+- The specification describes deterministic algorithms and mathematical
+  invariants intended to be implemented and verified independently by any
+  party.
+- Operational authority is the reproducible math and conformance output, not a
+  central operator.
 
-Aztec Code Notice
+Rights Dedication
+- Repository contents are dedicated using CC0 1.0 Universal. See `LICENSE`.
+- The intent is unrestricted use, implementation, verification, and
+  redistribution.
+
+Protocol and Patent Posture
+- Contributors publish this repository to enable open implementation.
+- To the extent a contributor controls patent claims necessarily infringed by a
+  conforming implementation of the published specification in this repository,
+  that contributor states a non-assert posture for using, making, selling, and
+  distributing conforming implementations.
+- This notice is project policy text and not legal advice. Users remain
+  responsible for legal review in their jurisdiction.
+
+Aztec Code Context
 - Aztec Code technology was historically covered by U.S. Patent 5,591,956.
-- This project provides implementation artifacts and interoperability tooling.
-- Users are responsible for validating legal status in their deployment
-  jurisdiction and date.
+- Users should validate current legal status for their deployment context.
 
 Third-Party Components
 - `aztec-code-generator` and `Pillow` are used for optional image rendering in
