@@ -7,6 +7,7 @@ Usage:
   ./ak verify       # run tests + conformance gate
   ./ak all          # verify then serve
   ./ak aztec-pack   # create Aztec chunk bundle from replay artifact
+  ./ak aztec-proof  # create control/algorithms/full proof bundles
   ./ak aztec-unpack # reconstruct artifact from Aztec chunk bundle
 """
 
@@ -48,7 +49,7 @@ def main() -> int:
         "command",
         nargs="?",
         default="serve",
-        choices=["serve", "verify", "all", "aztec-pack", "aztec-unpack"],
+        choices=["serve", "verify", "all", "aztec-pack", "aztec-proof", "aztec-unpack"],
         help="serve, verify, run all, or use Aztec bundle pack/unpack",
     )
     parser.add_argument("--mode", default="16d", choices=["kernel", "16d"])
@@ -56,6 +57,12 @@ def main() -> int:
     parser.add_argument("--seed", default="0x0B7406AC")
     parser.add_argument("--steps", type=int, default=64)
     parser.add_argument("--chunk-bytes", type=int, default=1200)
+    parser.add_argument("--ordering", default="spiral_ccw_outer_to_core")
+    parser.add_argument("--layers-mode", default="auto", choices=["compact", "full", "auto"])
+    parser.add_argument("--ecc-ratio", type=float, default=0.23)
+    parser.add_argument("--min-check-words", type=int, default=3)
+    parser.add_argument("--codeword-bits", type=int, default=8, choices=[6, 8, 10, 12])
+    parser.add_argument("--no-stuffing", action="store_true")
     parser.add_argument("--outdir", default="aztec-bundle")
     parser.add_argument("--indir", default="aztec-bundle")
     parser.add_argument("--output", default="aztec-bundle/recovered.json")
@@ -81,6 +88,48 @@ def main() -> int:
                 str(args.steps),
                 "--chunk-bytes",
                 str(args.chunk_bytes),
+                "--ordering",
+                args.ordering,
+                "--layers-mode",
+                args.layers_mode,
+                "--ecc-ratio",
+                str(args.ecc_ratio),
+                "--min-check-words",
+                str(args.min_check_words),
+                "--codeword-bits",
+                str(args.codeword_bits),
+                *((["--no-stuffing"]) if args.no_stuffing else []),
+                "--outdir",
+                args.outdir,
+            ]
+        )
+    if args.command == "aztec-proof":
+        return run(
+            [
+                sys.executable,
+                "aztec_bundle.py",
+                "pack-proof",
+                "--mode",
+                args.mode,
+                "--width",
+                str(args.width),
+                "--seed",
+                args.seed,
+                "--steps",
+                str(args.steps),
+                "--chunk-bytes",
+                str(args.chunk_bytes),
+                "--ordering",
+                args.ordering,
+                "--layers-mode",
+                args.layers_mode,
+                "--ecc-ratio",
+                str(args.ecc_ratio),
+                "--min-check-words",
+                str(args.min_check_words),
+                "--codeword-bits",
+                str(args.codeword_bits),
+                *((["--no-stuffing"]) if args.no_stuffing else []),
                 "--outdir",
                 args.outdir,
             ]

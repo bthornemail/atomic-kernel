@@ -99,10 +99,21 @@ class V1Tests(unittest.TestCase):
 
     def test_aztec_bundle_roundtrip(self):
         artifact = replay_artifact("16d", 32, 0x0B7406AC, 16).as_dict()
-        manifest, chunks = build_bundle(artifact, chunk_bytes=400)
+        manifest, chunks = build_bundle(
+            artifact,
+            chunk_bytes=400,
+            ordering="spiral_ccw_outer_to_core",
+            codeword_bits=8,
+            stuffing=True,
+        )
         out = recover_bundle(manifest, chunks)
         self.assertEqual(out, artifact)
         self.assertEqual(manifest["canonicalization"], "stream-sign-value-v1")
+        self.assertIn("aztec_profile", manifest)
+        self.assertEqual(manifest["aztec_profile"]["bit_order"], "msb-first")
+        self.assertIn("descriptor_parity", manifest)
+        self.assertEqual(manifest["descriptor_parity"]["chunk_count"], manifest["total_chunks"])
+        self.assertTrue(all("order_index" in c for c in chunks))
 
 
 class APITests(unittest.TestCase):

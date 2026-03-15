@@ -38,6 +38,9 @@ Open the dashboard at `http://127.0.0.1:8080`.
 # Create Aztec chunk payloads from a replay artifact
 ./ak aztec-pack --mode 16d --width 32 --seed 0x0B7406AC --steps 64 --outdir aztec-bundle
 
+# Create proof-layer payload sets (control codes, algorithms, full artifact)
+./ak aztec-proof --outdir aztec-proof
+
 # Reconstruct artifact from chunk files
 ./ak aztec-unpack --indir aztec-bundle --output aztec-bundle/recovered.json
 
