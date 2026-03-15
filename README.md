@@ -19,6 +19,17 @@ Open dashboard: `http://127.0.0.1:8080`
 - Authority decision gate
 - Haskell oracle parity endpoint and conformance gate
 
+## Proof Boundary
+- `Implemented`: present in repository code and callable interfaces.
+- `Verified`: supported by reproducible commands listed below.
+Evidence: `python3 tests/test_all.py`, `python3 tests/test_v1.py`, `python3 conformance.py`
+- `Conjecture/Open`: not release-authoritative.
+
+Evidence:
+- Core deterministic suite: `python3 tests/test_all.py`
+- Mode-aware + API + Aztec bundle suite: `python3 tests/test_v1.py`
+- Cross-language conformance: `python3 conformance.py`
+
 ## Key Commands
 ```bash
 # API + dashboard

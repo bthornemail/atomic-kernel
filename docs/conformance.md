@@ -54,3 +54,4 @@ If mismatches occur, deterministic diff output is written to:
 ## Claim Labels
 - `Implemented`: Conformance gate script and oracle endpoint exist.
 - `Verified`: Local pass of `python3 conformance.py`.
+Evidence: `python3 conformance.py`

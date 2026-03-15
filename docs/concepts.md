@@ -13,16 +13,19 @@ This page is informative and summarizes runtime behavior.
 
 ### `mode=kernel`
 Claim label: `Implemented`, `Verified`
+Evidence: `python3 tests/test_v1.py`
 - Normative law version: `kernel-v1`
 - Width: `16`
 
 ### `mode=16d`
 Claim label: `Implemented`, `Verified`
+Evidence: `python3 tests/test_v1.py`
 - Normative law version: `16d-v1`
 - Widths: `16, 32, 64, 128, 256`
 
 ## Deterministic Artifact Rules
 Claim label: `Implemented`, `Verified`
+Evidence: `python3 tests/test_v1.py`
 - Canonical JSON serialization uses sorted keys and compact separators.
 - Canonical bytes are UTF-8.
 - Artifact digests are tagged (`<algo>:<hex>`), default `sha3_256`.
@@ -30,12 +33,14 @@ Claim label: `Implemented`, `Verified`
 
 ## Identity Contract (SID/OID)
 Claim label: `Implemented`, `Verified`
+Evidence: `python3 tests/test_all.py` and `python3 tests/test_v1.py`
 - `SID = hash(type:canonical_form)`
 - `OID = hash(clock:sid:prev_oid)`
 - Hash algorithm is tagged and configurable (`sha256`, `sha3_256`).
 
 ## Control-Plane Contract
 Claim label: `Implemented`, `Verified`
+Evidence: `python3 tests/test_v1.py`
 - Basis separators: `FS(0x1C)`, `GS(0x1D)`, `RS(0x1E)`, `US(0x1F)`.
 - Canonicalization: `stream-sign-value-v1`.
 - Orbit base: `36`.
@@ -43,12 +48,14 @@ Claim label: `Implemented`, `Verified`
 
 ## Authority Boundary
 Claim label: `Implemented`, `Verified`
+Evidence: `python3 tests/test_v1.py`
 - Layers `1..8` are normative surfaces.
 - Layers `9..32` are advisory by policy.
 - Advisory layers cannot `mutate/write/override` canonical artifacts.
 
 ## Compatibility Statement
 Claim label: `Implemented`, `Verified`
+Evidence: `python3 conformance.py`
 - Current conformance lock: `ak-v1-2026-03-15`.
 - Conformance metadata includes `hash_algo` and `canonicalization`.
 

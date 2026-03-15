@@ -6,6 +6,15 @@ Status: Active policy for docs and release notes
 ## Rule
 Any strong claim in published documentation must map to a runnable command, fixture, or test.
 
+## Required Claim Record
+Use this structure for release-authoritative claims:
+
+```markdown
+Claim: <short statement>
+Status: Implemented | Verified | Conjecture/Open
+Evidence: <command or file path>   # required when Status includes Verified
+```
+
 ## Claim Labels
 - `Implemented`: Feature exists in the codebase.
 - `Verified`: Feature is demonstrated by automated test or conformance command.
