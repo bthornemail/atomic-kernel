@@ -1,0 +1,49 @@
+{
+  "basis": {
+    "unicode_version": "DRAFT-UNPINNED",
+    "utf_ebcdic_artifact": "DRAFT-UNPINNED",
+    "normalization": "NFC"
+  },
+  "cases": [
+    {
+      "context": "U+0041",
+      "seeds": {
+        "16": "0x06AC",
+        "32": "0x0B7406AC",
+        "64": "0xA2E0DD8B0B7406AC",
+        "128": "0x8D3DAA39F7D9EF57A2E0DD8B0B7406AC",
+        "256": "0x1BE60342E1EA1DABB163A9B6DA0FB2308D3DAA39F7D9EF57A2E0DD8B0B7406AC"
+      }
+    },
+    {
+      "context": "U+10FFFF",
+      "seeds": {
+        "16": "0xCA46",
+        "32": "0xE9A1CA46",
+        "64": "0xBD9BC335E9A1CA46",
+        "128": "0x16D445F6BE49330ABD9BC335E9A1CA46",
+        "256": "0x489618D2B81937445CA1C268DC84768416D445F6BE49330ABD9BC335E9A1CA46"
+      }
+    },
+    {
+      "context": "ROOT:/",
+      "seeds": {
+        "16": "0x3937",
+        "32": "0x46B03937",
+        "64": "0x18537E2046B03937",
+        "128": "0x15665952034C9AEC18537E2046B03937",
+        "256": "0x7D97CB3403CEFED0CA14906CFA93BA3E15665952034C9AEC18537E2046B03937"
+      }
+    },
+    {
+      "context": "NAMESPACE:example/demo",
+      "seeds": {
+        "16": "0x107B",
+        "32": "0xF316107B",
+        "64": "0x57EB9FB2F316107B",
+        "128": "0x92380DD378BB5CB057EB9FB2F316107B",
+        "256": "0x9408EF8CB727CF47B41D27DB952DF14292380DD378BB5CB057EB9FB2F316107B"
+      }
+    }
+  ]
+}

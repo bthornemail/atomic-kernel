@@ -1,0 +1,29 @@
+{
+  "spec_version": "v0",
+  "name": "utf-ebcdic-control-layout",
+  "control_range": {
+    "start": 0,
+    "end": 63
+  },
+  "data_digit_range": {
+    "start": 0,
+    "end": 59
+  },
+  "reserved_range": {
+    "start": 60,
+    "end": 63
+  },
+  "orbit_weight": 36,
+  "channels": {
+    "FS": 28,
+    "GS": 29,
+    "RS": 30,
+    "US": 31
+  },
+  "sign_rules": {
+    "plus_ranges": [[0, 6], [28, 59]],
+    "minus_ranges": [[8, 27]],
+    "bel_toggle_code": 7,
+    "nul_code": 0
+  }
+}

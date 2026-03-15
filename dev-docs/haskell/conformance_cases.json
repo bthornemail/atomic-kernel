@@ -1,0 +1,26 @@
+{
+  "conformance_version": "ak-v1-2026-03-15",
+  "mode": "16d",
+  "hash_algo": "sha3_256",
+  "canonicalization": "stream-sign-value-v1",
+  "basis": {
+    "unicode_version": "DRAFT-UNPINNED",
+    "utf_ebcdic_artifact": "DRAFT-UNPINNED",
+    "normalization": "NFC"
+  },
+  "cases": [
+    {
+      "id": "ctx-u0041",
+      "context": "U+0041",
+      "widths": [16, 32, 64, 128, 256],
+      "steps": 16,
+      "seeds": {
+        "16": "0x06AC",
+        "32": "0x0B7406AC",
+        "64": "0xA2E0DD8B0B7406AC",
+        "128": "0x8D3DAA39F7D9EF57A2E0DD8B0B7406AC",
+        "256": "0x1BE60342E1EA1DABB163A9B6DA0FB2308D3DAA39F7D9EF57A2E0DD8B0B7406AC"
+      }
+    }
+  ]
+}

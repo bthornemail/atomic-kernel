@@ -1,0 +1,151 @@
+{
+  "width": 128,
+  "constant_hex": "0x1D1D1D1D1D1D1D1D1D1D1D1D1D1D1D1D",
+  "seed_hex": "0x8D3DAA39F7D9EF57A2E0DD8B0B7406AC",
+  "steps": [
+    {
+      "step": 0,
+      "state_hex": "0x8D3DAA39F7D9EF57A2E0DD8B0B7406AC",
+      "band": {
+        "width": 128,
+        "density": 70,
+        "texture": 66
+      }
+    },
+    {
+      "step": 1,
+      "state_hex": "0x4DC4722F3197C2DAA7627D319288248B",
+      "band": {
+        "width": 127,
+        "density": 60,
+        "texture": 68
+      }
+    },
+    {
+      "step": 2,
+      "state_hex": "0x3BC774B13EE97ECBC11291BEC8EE7973",
+      "band": {
+        "width": 126,
+        "density": 72,
+        "texture": 62
+      }
+    },
+    {
+      "step": 3,
+      "state_hex": "0x7A598CDAD83E496667E817F97989BA3E",
+      "band": {
+        "width": 127,
+        "density": 70,
+        "texture": 60
+      }
+    },
+    {
+      "step": 4,
+      "state_hex": "0xA5F40148DA9C56BB747788DA7C21D61D",
+      "band": {
+        "width": 128,
+        "density": 64,
+        "texture": 66
+      }
+    },
+    {
+      "step": 5,
+      "state_hex": "0x102815984A60101E8B53A84C9B58744C",
+      "band": {
+        "width": 125,
+        "density": 48,
+        "texture": 64
+      }
+    },
+    {
+      "step": 6,
+      "state_hex": "0xB8079F89C845B9D3F3F3E5F3D7B84AF6",
+      "band": {
+        "width": 128,
+        "density": 74,
+        "texture": 54
+      }
+    },
+    {
+      "step": 7,
+      "state_hex": "0x032F39A2BDAACE5199990018FA41CDF8",
+      "band": {
+        "width": 122,
+        "density": 60,
+        "texture": 58
+      }
+    },
+    {
+      "step": 8,
+      "state_hex": "0x02F16D25247440A684815DED05009A53",
+      "band": {
+        "width": 122,
+        "density": 50,
+        "texture": 68
+      }
+    },
+    {
+      "step": 9,
+      "state_hex": "0xCFC8F5373F4A894D91351ED47E58DDB7",
+      "band": {
+        "width": 128,
+        "density": 72,
+        "texture": 68
+      }
+    },
+    {
+      "step": 10,
+      "state_hex": "0x0F396387560EE7B9D29291A30CFC7CA1",
+      "band": {
+        "width": 124,
+        "density": 64,
+        "texture": 60
+      }
+    },
+    {
+      "step": 11,
+      "state_hex": "0x396A9EC8D4F4564E5808172BA0391E7F",
+      "band": {
+        "width": 126,
+        "density": 62,
+        "texture": 64
+      }
+    },
+    {
+      "step": 12,
+      "state_hex": "0x6AC67178266A1660FB4F8FDDB4A99585",
+      "band": {
+        "width": 127,
+        "density": 66,
+        "texture": 68
+      }
+    },
+    {
+      "step": 13,
+      "state_hex": "0xC413E8726B0307430F2D9FBCBC28FF5D",
+      "band": {
+        "width": 128,
+        "density": 66,
+        "texture": 54
+      }
+    },
+    {
+      "step": 14,
+      "state_hex": "0xC4A1747609C3E853B9E1B86EAB01269F",
+      "band": {
+        "width": 128,
+        "density": 62,
+        "texture": 60
+      }
+    },
+    {
+      "step": 15,
+      "state_hex": "0x407C0B5CC2F575334FABC0AEB9D62D7B",
+      "band": {
+        "width": 127,
+        "density": 68,
+        "texture": 68
+      }
+    }
+  ]
+}

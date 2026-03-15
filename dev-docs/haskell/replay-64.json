@@ -1,0 +1,151 @@
+{
+  "width": 64,
+  "constant_hex": "0x1D1D1D1D1D1D1D1D",
+  "seed_hex": "0xA2E0DD8B0B7406AC",
+  "steps": [
+    {
+      "step": 0,
+      "state_hex": "0xA2E0DD8B0B7406AC",
+      "band": {
+        "width": 64,
+        "density": 29,
+        "texture": 34
+      }
+    },
+    {
+      "step": 1,
+      "state_hex": "0x67627D319288248A",
+      "band": {
+        "width": 63,
+        "density": 27,
+        "texture": 34
+      }
+    },
+    {
+      "step": 2,
+      "state_hex": "0x711291BEC8EE7978",
+      "band": {
+        "width": 63,
+        "density": 33,
+        "texture": 30
+      }
+    },
+    {
+      "step": 3,
+      "state_hex": "0x6BE817F97989BA70",
+      "band": {
+        "width": 63,
+        "density": 35,
+        "texture": 28
+      }
+    },
+    {
+      "step": 4,
+      "state_hex": "0x8F7788DA7C21D4E2",
+      "band": {
+        "width": 64,
+        "density": 33,
+        "texture": 30
+      }
+    },
+    {
+      "step": 5,
+      "state_hex": "0xDB93A84C9B5866F4",
+      "band": {
+        "width": 64,
+        "density": 33,
+        "texture": 36
+      }
+    },
+    {
+      "step": 6,
+      "state_hex": "0x4043E5F3D7B8FEEF",
+      "band": {
+        "width": 63,
+        "density": 39,
+        "texture": 24
+      }
+    },
+    {
+      "step": 7,
+      "state_hex": "0x4F950018FA452802",
+      "band": {
+        "width": 63,
+        "density": 23,
+        "texture": 28
+      }
+    },
+    {
+      "step": 8,
+      "state_hex": "0x6D7A5DED052F470B",
+      "band": {
+        "width": 63,
+        "density": 35,
+        "texture": 36
+      }
+    },
+    {
+      "step": 9,
+      "state_hex": "0x7765DED47F727A92",
+      "band": {
+        "width": 63,
+        "density": 39,
+        "texture": 34
+      }
+    },
+    {
+      "step": 10,
+      "state_hex": "0xD52121A307B6A20E",
+      "band": {
+        "width": 64,
+        "density": 27,
+        "texture": 34
+      }
+    },
+    {
+      "step": 11,
+      "state_hex": "0xAB1E1B2BEE28E1F5",
+      "band": {
+        "width": 64,
+        "density": 35,
+        "texture": 32
+      }
+    },
+    {
+      "step": 12,
+      "state_hex": "0x791674DF4B81E926",
+      "band": {
+        "width": 63,
+        "density": 33,
+        "texture": 32
+      }
+    },
+    {
+      "step": 13,
+      "state_hex": "0xB9C7CF6E04F1FC2B",
+      "band": {
+        "width": 64,
+        "density": 37,
+        "texture": 24
+      }
+    },
+    {
+      "step": 14,
+      "state_hex": "0x4EDD0B6AB24D7B1D",
+      "band": {
+        "width": 63,
+        "density": 35,
+        "texture": 40
+      }
+    },
+    {
+      "step": 15,
+      "state_hex": "0xA5F81247477F6D0A",
+      "band": {
+        "width": 64,
+        "density": 33,
+        "texture": 32
+      }
+    }
+  ]
+}

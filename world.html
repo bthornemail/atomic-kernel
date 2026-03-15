@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Atomic Kernel — The World</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #080810; color: #ccc;
+  font-family: 'Courier New', monospace;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 16px; gap: 14px; min-height: 100vh;
+}
+h1 { color: #7799ff; font-size: 1.2rem; letter-spacing: .2em; text-transform: uppercase; }
+.sub { color: #334; font-size: .7rem; letter-spacing: .12em; }
+
+.tickbar {
+  display: flex; gap: 24px; flex-wrap: wrap; justify-content: center;
+  background: #0d0d18; border: 1px solid #1e1e33;
+  border-radius: 6px; padding: 10px 20px; width: 100%; max-width: 860px;
+}
+.titem { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.tlabel { font-size: .6rem; color: #445; text-transform: uppercase; letter-spacing: .1em; }
+.tval { font-size: 1rem; color: #aaddff; font-weight: bold; min-width: 60px; text-align: center; }
+
+canvas { border: 1px solid #1a1a30; border-radius: 4px; display: block; }
+
+.controls {
+  display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; align-items: center;
+}
+button {
+  background: #12122a; color: #88aaff; border: 1px solid #2a2a4a;
+  border-radius: 4px; padding: 7px 18px;
+  font-family: 'Courier New', monospace; font-size: .8rem; cursor: pointer;
+}
+button:hover { background: #1c1c3a; }
+button.on { border-color: #88aaff; background: #1e1e42; }
+.cg { display: flex; align-items: center; gap: 6px; font-size: .75rem; color: #667; }
+input[type=range] { accent-color: #88aaff; width: 120px; }
+
+.idbox {
+  width: 100%; max-width: 860px; background: #0a0a14;
+  border: 1px solid #1a1a2e; border-radius: 6px; overflow: hidden;
+}
+.idbox table { width: 100%; border-collapse: collapse; font-size: .65rem; }
+.idbox th {
+  background: #111128; color: #556; text-transform: uppercase;
+  letter-spacing: .08em; padding: 4px 8px; text-align: right;
+  border-bottom: 1px solid #1a1a2e;
+}
+.idbox td { padding: 3px 8px; text-align: right; border-bottom: 1px solid #0f0f1e; color: #778; }
+.idbox tr:hover td { background: #111120; }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<h1>Atomic Kernel — The World</h1>
+<p class="sub">one crystal · 16 observers · deterministic · replayable</p>
+
+<div class="tickbar">
+  <div class="titem"><span class="tlabel">Tick n</span><span class="tval" id="v-t">0</span></div>
+  <div class="titem"><span class="tlabel">Clock</span><span class="tval" id="v-clk">0.1.00</span></div>
+  <div class="titem"><span class="tlabel">Frame</span><span class="tval" id="v-frame">0</span></div>
+  <div class="titem"><span class="tlabel">Orbit</span><span class="tval" id="v-orbit">0</span></div>
+  <div class="titem"><span class="tlabel">Offset</span><span class="tval" id="v-offset">0</span></div>
+  <div class="titem"><span class="tlabel">Phase</span><span class="tval" id="v-phase">0</span></div>
+  <div class="titem"><span class="tlabel">Diff</span><span class="tval" id="v-diff">0</span></div>
+</div>
+
+<canvas id="c" width="640" height="400"></canvas>
+
+<div class="controls">
+  <button id="btn-play" class="on">⏸ Pause</button>
+  <button id="btn-step">+1</button>
+  <button id="btn-back">−1</button>
+  <button id="btn-reset">Reset</button>
+  <div class="cg">Speed
+    <input type="range" id="spd" min="1" max="60" value="8">
+    <span id="spd-v">8 fps</span>
+  </div>
+  <div class="cg">Scrub
+    <input type="range" id="scrub" min="0" max="2048" value="0">
+    <span id="scrub-v">t=0</span>
+  </div>
+</div>
+
+<div class="idbox">
+  <table>
+    <thead><tr>
+      <th style="text-align:left">Seed</th>
+      <th>State</th><th>x</th><th>y</th>
+      <th>Orbit</th><th>Offset</th><th>Sym</th>
+      <th>SID (last 8)</th><th style="text-align:center">Color</th>
+    </tr></thead>
+    <tbody id="tbl"></tbody>
+  </table>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// CRYSTAL  (mirrors crystal.py exactly)
+// ═══════════════════════════════════════════════
+const MASK = 0xFFFF, CC = 0x1D1D;
+const B = [0,1,3,6,9,8,6,3], T = 8, W = 36;
+
+function rotl(x,n){ return ((x<<n)|(x>>>(16-n)))&MASK; }
+function rotr(x,n){ return ((x>>>n)|(x<<(16-n)))&MASK; }
+function advance(x){ return (rotl(x,1)^rotl(x,3)^rotr(x,2)^CC)&MASK; }
+function crystalTick(s,t){ return advance((s^B[t%T])&MASK); }
+
+function positionAt(n){
+  const full=Math.floor(n/T), rem=n%T;
+  return full*W + B.slice(0,rem).reduce((a,b)=>a+b,0);
+}
+function crystalRead(pos){ return {orbit:Math.floor(pos/W), offset:pos%W}; }
+function stateAt(seed,n){
+  let s=seed&MASK;
+  for(let t=0;t<n;t++) s=crystalTick(s,t);
+  return s;
+}
+
+// ═══════════════════════════════════════════════
+// IDENTITY  (mirrors identity.py exactly)
+// ═══════════════════════════════════════════════
+async function sha256hex(str){
+  const buf = await crypto.subtle.digest(
+    'SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf))
+    .map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// We cache SIDs since they never change
+const sidCache = {};
+async function sidForSeed(seed){
+  const key = `0x${(seed&MASK).toString(16).toUpperCase().padStart(4,'0')}`;
+  if(sidCache[key]) return sidCache[key];
+  const h = await sha256hex(`world.object:${key}`);
+  sidCache[key] = 'sha256:' + h;
+  return sidCache[key];
+}
+
+// OID chain — one per seed, grows as ticks advance
+const oidChains = {};  // seed -> { prevOid, lastOid }
+
+async function computeOid(seed, n){
+  const pos = positionAt(n);
+  const {orbit, offset} = crystalRead(pos);
+  const phase = n%T;
+  const clkStr = `${orbit}.${phase+1}.${offset.toString(16).padStart(2,'0').toUpperCase()}`;
+  const sidStr = await sidForSeed(seed);
+  const key = seed & MASK;
+  if(!oidChains[key]) oidChains[key] = { prevOid: 'genesis' };
+  const raw = `${clkStr}:${sidStr}:${oidChains[key].prevOid}`;
+  const h = await sha256hex(raw);
+  const thisOid = 'sha256:' + h;
+  oidChains[key].prevOid = thisOid;
+  oidChains[key].lastOid = thisOid;
+  return { clkStr, sidStr, oid: thisOid };
+}
+
+// ═══════════════════════════════════════════════
+// PROJECTION
+// ═══════════════════════════════════════════════
+const CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+=";
+function toColor(state,orbit){
+  return `rgb(${(state>>8)&0xFF},${(state>>3)&0xFF},${(state^(orbit*17))&0xFF})`;
+}
+function toSymbol(state,orbit){ return CHARS[(state^orbit)%CHARS.length]; }
+
+const SEEDS=[0x0001,0x0013,0x00A7,0x0401,0x1D1D,0x2B3C,0x3FFF,0x4E2A,
+             0x5A01,0x6B6B,0x7ABC,0x8080,0x9F1E,0xA3C5,0xBEEF,0xCAFE];
+
+function observe(seed,n){
+  const state=stateAt(seed,n);
+  const pos=positionAt(n);
+  const {orbit,offset}=crystalRead(pos);
+  return {
+    seed, n, state,
+    hex:`0x${state.toString(16).toUpperCase().padStart(4,'0')}`,
+    pos, orbit, offset, phase:n%T, diff:B[n%T],
+    x:state%64,
+    y:state.toString(2).split('').filter(b=>b==='1').length*4,
+    size:5+(offset%8),
+    color:toColor(state,orbit),
+    symbol:toSymbol(state,orbit)
+  };
+}
+
+// ═══════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════
+const canvas=document.getElementById('c');
+const ctx=canvas.getContext('2d');
+const CW=canvas.width, CH=canvas.height;
+const trails={};
+SEEDS.forEach(s=>trails[s]=[]);
+const TRAIL=40;
+
+function render(objs,n){
+  ctx.fillStyle='rgba(8,8,16,0.35)';
+  ctx.fillRect(0,0,CW,CH);
+  // grid
+  ctx.strokeStyle='#0f0f20'; ctx.lineWidth=0.5;
+  for(let x=0;x<CW;x+=64){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,CH);ctx.stroke();}
+  for(let y=0;y<CH;y+=64){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(CW,y);ctx.stroke();}
+
+  objs.forEach(obj=>{
+    const tr=trails[obj.seed];
+    tr.push({x:obj.x*10,y:obj.y,color:obj.color});
+    if(tr.length>TRAIL) tr.shift();
+    tr.forEach((pt,i)=>{
+      ctx.globalAlpha=(i/TRAIL)*0.5;
+      ctx.fillStyle=pt.color;
+      ctx.fillRect(pt.x-2,pt.y-2,4,4);
+    });
+  });
+
+  objs.forEach(obj=>{
+    const px=obj.x*10, py=obj.y;
+    const grd=ctx.createRadialGradient(px,py,0,px,py,obj.size*2.5);
+    grd.addColorStop(0,obj.color); grd.addColorStop(1,'transparent');
+    ctx.globalAlpha=0.3; ctx.fillStyle=grd;
+    ctx.beginPath(); ctx.arc(px,py,obj.size*2.5,0,Math.PI*2); ctx.fill();
+    ctx.globalAlpha=1; ctx.fillStyle=obj.color;
+    ctx.beginPath(); ctx.arc(px,py,obj.size,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.globalAlpha=0.9;
+    ctx.font=`bold ${Math.max(8,obj.size-1)}px Courier New`;
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(obj.symbol,px,py);
+    if(obj.offset===0){
+      ctx.globalAlpha=0.7; ctx.strokeStyle=obj.color; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.arc(px,py,obj.size+5,0,Math.PI*2); ctx.stroke();
+    }
+  });
+  ctx.globalAlpha=1;
+}
+
+async function updateTable(objs,n){
+  // Update clock display
+  const pos=positionAt(n);
+  const {orbit,offset}=crystalRead(pos);
+  const phase=n%T;
+  const clkStr=`${orbit}.${phase+1}.${offset.toString(16).padStart(2,'0').toUpperCase()}`;
+  document.getElementById('v-t').textContent=n;
+  document.getElementById('v-clk').textContent=clkStr;
+  document.getElementById('v-frame').textContent=orbit;
+  document.getElementById('v-orbit').textContent=orbit;
+  document.getElementById('v-offset').textContent=offset;
+  document.getElementById('v-phase').textContent=phase;
+  document.getElementById('v-diff').textContent=B[phase];
+  document.getElementById('scrub').value=n;
+  document.getElementById('scrub-v').textContent=`t=${n}`;
+
+  // Table (compute SIDs async)
+  const tbody=document.getElementById('tbl');
+  tbody.innerHTML='';
+  for(const obj of objs){
+    const sidStr=await sidForSeed(obj.seed);
+    const tr=document.createElement('tr');
+    tr.innerHTML=
+      `<td style="text-align:left;color:#7799ff">${obj.seed}</td>`+
+      `<td style="color:#adf">${obj.hex}</td>`+
+      `<td>${obj.x}</td><td>${obj.y}</td>`+
+      `<td style="color:#fa8">${obj.orbit}</td><td>${obj.offset}</td>`+
+      `<td style="font-weight:bold;color:${obj.color}">${obj.symbol}</td>`+
+      `<td style="color:#556">${sidStr.slice(-8)}</td>`+
+      `<td style="text-align:center"><span class="sw" style="background:${obj.color}"></span></td>`;
+    tbody.appendChild(tr);
+  }
+}
+
+// ═══════════════════════════════════════════════
+// LOOP
+// ═══════════════════════════════════════════════
+let n=0, playing=true, fps=8, last=0;
+
+async function step(dir=1){
+  n=Math.max(0,n+dir);
+  const objs=SEEDS.map(seed=>observe(seed,n));
+  render(objs,n);
+  await updateTable(objs,n);
+}
+
+function loop(now){
+  requestAnimationFrame(loop);
+  if(!playing) return;
+  if(now-last<1000/fps) return;
+  last=now;
+  step(1);
+}
+
+document.getElementById('btn-play').addEventListener('click',()=>{
+  playing=!playing;
+  document.getElementById('btn-play').textContent=playing?'⏸ Pause':'▶ Play';
+  document.getElementById('btn-play').classList.toggle('on',playing);
+});
+document.getElementById('btn-step').addEventListener('click',()=>{playing=false;step(1);});
+document.getElementById('btn-back').addEventListener('click',()=>{playing=false;step(-1);});
+document.getElementById('btn-reset').addEventListener('click',()=>{
+  n=0; SEEDS.forEach(s=>trails[s]=[]);
+  ctx.clearRect(0,0,CW,CH); step(0);
+});
+document.getElementById('spd').addEventListener('input',e=>{
+  fps=parseInt(e.target.value);
+  document.getElementById('spd-v').textContent=`${fps} fps`;
+});
+document.getElementById('scrub').addEventListener('input',e=>{
+  playing=false; n=parseInt(e.target.value);
+  SEEDS.forEach(s=>trails[s]=[]); step(0);
+});
+
+step(0);
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

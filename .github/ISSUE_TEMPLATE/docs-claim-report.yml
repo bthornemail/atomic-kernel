@@ -1,0 +1,36 @@
+name: Documentation Claim Report
+description: Report an inaccurate or unverifiable claim in published docs
+title: "docs claim: "
+labels:
+  - documentation
+  - claim-audit
+body:
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      description: Path to the documentation page
+      placeholder: docs/concepts.md
+    validations:
+      required: true
+  - type: textarea
+    id: claim
+    attributes:
+      label: Claim text
+      description: Paste the exact claim
+    validations:
+      required: true
+  - type: textarea
+    id: expected_evidence
+    attributes:
+      label: Expected evidence
+      description: Command, fixture, or test that should prove the claim
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed behavior
+      description: What failed and how to reproduce
+    validations:
+      required: true

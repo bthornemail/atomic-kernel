@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+dev-docs/*.mp4
+dev-docs/*.m4a
+dev-docs/*.png
+
+# local editor or policy files
+.github/instructions/codacy.instructions.md

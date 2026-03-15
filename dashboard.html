@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Atomic Kernel v1 Dashboard</title>
+<style>
+:root{
+  --bg:#08101a;
+  --panel:#111c2b;
+  --line:#2a3f5f;
+  --ink:#e6edf6;
+  --muted:#9db0c9;
+  --accent:#4ed0a8;
+  --warn:#ffb454;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Consolas,Monaco,monospace;background:radial-gradient(circle at 10% 0%,#163150,var(--bg));color:var(--ink)}
+main{max-width:1300px;margin:0 auto;padding:16px}
+h1{margin:0 0 8px;font-size:1.2rem}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--line);padding:10px;border-radius:8px}
+input,select,button,textarea{font-family:inherit;font-size:.9rem;background:#0b1624;color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px}
+button{cursor:pointer;background:#0f2638}
+.grid{margin-top:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px}
+.panel h2{font-size:.95rem;margin:0 0 8px;color:var(--accent)}
+.pre{white-space:pre-wrap;word-break:break-word;font-size:.78rem;color:var(--muted);max-height:240px;overflow:auto}
+.ok{color:var(--accent)}
+.bad{color:#ff7070}
+.matrix{display:grid;grid-template-columns:repeat(5,minmax(30px,1fr));gap:4px;font-size:.75rem}
+.cell{padding:6px;text-align:center;border:1px solid var(--line);background:#0b1624}
+.small{font-size:.75rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+  <h1>Atomic Kernel v1 Verification Dashboard</h1>
+  <div class="controls">
+    <label>Mode <select id="mode"><option value="kernel">kernel</option><option value="16d">16d</option></select></label>
+    <label>Width <select id="width"><option>16</option><option>32</option><option>64</option><option>128</option><option>256</option></select></label>
+    <label>Seed <input id="seed" value="0x0001"></label>
+    <label>Steps <input id="steps" type="number" min="1" max="256" value="16"></label>
+    <button id="run">Run Replay</button>
+    <button id="recompute">Recompute & Compare</button>
+  </div>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>Replay Timeline</h2>
+      <div id="replay-status" class="small"></div>
+      <div id="timeline" class="pre"></div>
+    </section>
+
+    <section class="panel">
+      <h2>4-Bit Machine</h2>
+      <div id="fourbit" class="pre"></div>
+    </section>
+
+    <section class="panel">
+      <h2>16-Lane Matrix</h2>
+      <div id="lane" class="matrix"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Oracle / Parity Status</h2>
+      <div class="small">Hash compare from repeated deterministic replay</div>
+      <div id="parity" class="pre"></div>
+      <h2 style="margin-top:10px">Control Plane</h2>
+      <textarea id="cpayload" rows="3">alpha\u001cbeta\u001dgamma\u001edelta\u001funit</textarea>
+      <button id="validate">Validate Control Plane</button>
+      <div id="cpout" class="pre"></div>
+    </section>
+  </div>
+</main>
+
+<script>
+let lastHash = null;
+let lastCanonical = null;
+
+function reqBody(){
+  return {
+    mode: document.getElementById('mode').value,
+    width: Number(document.getElementById('width').value),
+    seed: document.getElementById('seed').value,
+    steps: Number(document.getElementById('steps').value)
+  };
+}
+
+async function post(path, payload){
+  const r = await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  return await r.json();
+}
+
+function renderLane(m){
+  const lane = document.getElementById('lane');
+  lane.innerHTML = '';
+  ['CH/L','0','1','2','3'].forEach(v=>{
+    const d=document.createElement('div');d.className='cell';d.textContent=v;lane.appendChild(d);
+  });
+  ['FS','GS','RS','US'].forEach(ch=>{
+    const hd=document.createElement('div');hd.className='cell';hd.textContent=ch;lane.appendChild(hd);
+    (m[ch]||[]).forEach(v=>{const d=document.createElement('div');d.className='cell';d.textContent=v;lane.appendChild(d);});
+  });
+}
+
+async function runReplay(){
+  const out = await post('/replay/hash', reqBody());
+  const full = await post('/replay', reqBody());
+  const first = full.states[0] || {};
+  document.getElementById('replay-status').textContent = `mode=${out.mode} law=${out.law_version} hash=${out.replay_hash}`;
+  document.getElementById('timeline').textContent = JSON.stringify(full.states.slice(0,8), null, 2);
+  document.getElementById('fourbit').textContent = JSON.stringify(first.four_bit || {}, null, 2);
+  renderLane(first.lane16 || {FS:[0,0,0,0],GS:[0,0,0,0],RS:[0,0,0,0],US:[0,0,0,0]});
+  lastHash = out.replay_hash;
+  lastCanonical = out.canonical_json;
+  document.getElementById('parity').innerHTML = `<span class='small'>latest hash stored for compare</span>`;
+}
+
+async function recomputeCompare(){
+  const out = await post('/replay/hash', reqBody());
+  let oracle = {ok:false,reason_code:'SKIPPED'};
+  if (reqBody().mode === '16d') {
+    oracle = await post('/oracle/parity', {
+      width: reqBody().width,
+      seed: reqBody().seed,
+      steps: reqBody().steps
+    });
+  }
+  const sameHash = out.replay_hash === lastHash;
+  const sameCanon = out.canonical_json === lastCanonical;
+  document.getElementById('parity').innerHTML =
+    `hash match: <span class='${sameHash?'ok':'bad'}'>${sameHash}</span>\n` +
+    `canonical json match: <span class='${sameCanon?'ok':'bad'}'>${sameCanon}</span>\n` +
+    `oracle parity: <span class='${oracle.ok?'ok':'bad'}'>${oracle.reason_code}</span>\n` +
+    `hash: ${out.replay_hash}`;
+}
+
+async function validateControlPlane(){
+  const out = await post('/control-plane/validate', {
+    mode: document.getElementById('mode').value,
+    payload: document.getElementById('cpayload').value
+  });
+  document.getElementById('cpout').textContent = JSON.stringify(out, null, 2);
+}
+
+document.getElementById('run').addEventListener('click', runReplay);
+document.getElementById('recompute').addEventListener('click', recomputeCompare);
+document.getElementById('validate').addEventListener('click', validateControlPlane);
+runReplay();
+</script>
+</body>
+</html>
