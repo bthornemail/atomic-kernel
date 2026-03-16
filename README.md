@@ -16,6 +16,7 @@ Static message demo: `message-demo-static.html` (open directly) or `http://127.0
 ## What Is Implemented
 - Mode-aware replay: `mode=kernel` and `mode=16d`
 - Deterministic canonical artifacts (`sha3_256:` digests)
+- Parallel identity outputs: hash-tagged replay IDs (`v1`) and math-only IDs (`math_id_v2`)
 - SID/OID verification path
 - Fail-closed control-plane validation
 - Authority decision gate

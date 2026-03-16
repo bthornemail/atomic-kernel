@@ -20,6 +20,7 @@ Request:
 Response fields:
 - `mode`, `law_version`, `width`, `seed_hex`, `steps`
 - `hash_algo`, `digest`
+- `math_law_version`, `math_id_v2`
 - `states[]`
 - `replay_hash`, `canonical_json`
 
@@ -31,6 +32,10 @@ curl -s -X POST http://127.0.0.1:8080/replay/hash \
   -H 'content-type: application/json' \
   -d '{"mode":"16d","width":16,"seed":"0x06AC","steps":8,"hash_algo":"sha3_256"}'
 ```
+
+Additional fields:
+- `math_law_version`: current math-only identity law version (`math-id-v2`)
+- `math_id_v2`: deterministic hash-free identity derived from canonical bytes
 
 ## POST `/control-plane/validate`
 Validates control stream and returns canonicalization output.

@@ -1,3 +1,29 @@
+# Atomic Kernel v1.0.1
+
+Release date: 2026-03-15  
+Status: follow-up publication patch
+
+## Scope
+- Added parallel math-only identity output path (`math_id_v2`) while preserving `v1` hash-based IDs.
+- Replay artifacts now include:
+  - `math_law_version` (`math-id-v2`)
+  - `math_id_v2`
+- `/replay/hash` API now returns both hash-based and math-only identity outputs.
+- Package API (`atomic_kernel.canonicalize`) includes `math_id_v2`.
+- Added tests validating `math_id_v2` determinism and API stability.
+
+## Verification Commands
+```bash
+python3 scripts/check_claims.py
+./ak verify
+```
+
+Expected:
+- docs claims check passes
+- full tests + conformance pass
+
+---
+
 # Atomic Kernel v1.0.0
 
 Release date: 2026-03-15  

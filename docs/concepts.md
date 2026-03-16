@@ -37,6 +37,7 @@ Evidence: `python3 tests/test_all.py` and `python3 tests/test_v1.py`
 - `SID = hash(type:canonical_form)`
 - `OID = hash(clock:sid:prev_oid)`
 - Hash algorithm is tagged and configurable (`sha256`, `sha3_256`).
+- Parallel math-only identity is emitted as `math_id_v2` (`math-id-v2` law), without cryptographic hash dependency.
 
 ## Control-Plane Contract
 Claim label: `Implemented`, `Verified`
