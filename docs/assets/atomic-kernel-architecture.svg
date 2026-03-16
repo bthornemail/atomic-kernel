@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1900" viewBox="0 0 1600 1900" role="img" aria-labelledby="title desc">
+  <title id="title">Atomic Kernel Architecture</title>
+  <desc id="desc">Layered architecture diagram showing Bit Domain, Mathematical Law, Clock, Canonicalization, Identity, Artifact, and Platform layers.</desc>
+
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#eef2ff"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="5.5" refY="5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <style>
+      .title { font: 700 38px Inter, Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 500 18px Inter, Arial, sans-serif; fill: #475569; }
+      .layer-title { font: 700 24px Inter, Arial, sans-serif; fill: #0f172a; letter-spacing: 0.6px; }
+      .body { font: 500 18px Inter, Arial, sans-serif; fill: #1e293b; }
+      .small { font: 500 16px Inter, Arial, sans-serif; fill: #475569; }
+      .rule { font: 700 18px Inter, Arial, sans-serif; fill: #0f172a; }
+      .muted { fill: #64748b; }
+      .chip { font: 700 15px Inter, Arial, sans-serif; fill: #334155; }
+      .mono { font: 600 16px "SFMono-Regular", Consolas, "Liberation Mono", monospace; fill: #0f172a; }
+      .box { fill: url(#card); stroke: #cbd5e1; stroke-width: 2; rx: 28; filter: url(#shadow); }
+      .pill { fill: #eef2ff; stroke: #c7d2fe; stroke-width: 1.5; rx: 18; }
+      .keyline { stroke: #94a3b8; stroke-width: 2; }
+      .flow { stroke: #475569; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .divider { stroke: #e2e8f0; stroke-width: 1.5; }
+      .accent { fill: #4338ca; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1600" height="1900" fill="url(#bg)"/>
+
+  <text x="800" y="72" text-anchor="middle" class="title">Atomic Kernel Architecture</text>
+  <text x="800" y="108" text-anchor="middle" class="subtitle">Bits → canonical algorithms → deterministic clock → canonical artifact → dual identity → platform adapters</text>
+
+  <!-- platform -->
+  <rect class="box" x="170" y="150" width="1260" height="175"/>
+  <text x="800" y="195" text-anchor="middle" class="layer-title">PLATFORM LAYER</text>
+  <text x="800" y="228" text-anchor="middle" class="body">engines · clients · APIs · dashboards · metaverse · storage · transport</text>
+  <text x="800" y="260" text-anchor="middle" class="small">Non-normative projections and adapters. May vary by platform.</text>
+  <rect class="pill" x="555" y="278" width="490" height="30"/>
+  <text x="800" y="298" text-anchor="middle" class="chip">Consumes canonical artifacts without redefining law</text>
+
+  <!-- artifact -->
+  <rect class="box" x="120" y="390" width="1360" height="220"/>
+  <text x="800" y="438" text-anchor="middle" class="layer-title">ARTIFACT LAYER</text>
+  <line x1="800" y1="460" x2="800" y2="585" class="divider"/>
+  <text x="455" y="495" text-anchor="middle" class="body">canonical bundle</text>
+  <text x="455" y="528" text-anchor="middle" class="body">Aztec proof artifacts</text>
+  <text x="455" y="561" text-anchor="middle" class="small">scannable verification boundary</text>
+  <text x="1145" y="495" text-anchor="middle" class="body">SID</text>
+  <text x="1145" y="528" text-anchor="middle" class="body">math_id_v2</text>
+  <text x="1145" y="561" text-anchor="middle" class="small">portable proof surface</text>
+  <rect class="pill" x="530" y="575" width="540" height="28"/>
+  <text x="800" y="594" text-anchor="middle" class="chip">Normative boundary ends here; above this is projection</text>
+
+  <!-- identity -->
+  <rect class="box" x="120" y="675" width="1360" height="220"/>
+  <text x="800" y="722" text-anchor="middle" class="layer-title">IDENTITY LAYER</text>
+  <line x1="800" y1="742" x2="800" y2="870" class="divider"/>
+  <text x="455" y="780" text-anchor="middle" class="body">v1 identity</text>
+  <text x="455" y="815" text-anchor="middle" class="mono">SID = hash(canonical_form)</text>
+  <text x="455" y="850" text-anchor="middle" class="small">practical cryptographic verification</text>
+  <text x="1145" y="780" text-anchor="middle" class="body">v2 identity</text>
+  <text x="1145" y="815" text-anchor="middle" class="mono">math_id = structural identity</text>
+  <text x="1145" y="850" text-anchor="middle" class="small">hash-independent mathematical continuity</text>
+
+  <!-- canonicalization -->
+  <rect class="box" x="90" y="960" width="1420" height="360"/>
+  <text x="800" y="1008" text-anchor="middle" class="layer-title">CANONICALIZATION LAYER</text>
+  <text x="800" y="1038" text-anchor="middle" class="small">Four normative algorithms define canonical behavior</text>
+
+  <rect class="pill" x="140" y="1075" width="1320" height="50"/>
+  <text x="165" y="1107" class="mono">AK-ALG-01</text>
+  <text x="365" y="1107" class="body">extract_control_stream.v1</text>
+  <text x="1110" y="1107" class="small">bitstream → UTF-EBCDIC control bytes</text>
+
+  <rect class="pill" x="140" y="1140" width="1320" height="50"/>
+  <text x="165" y="1172" class="mono">AK-ALG-02</text>
+  <text x="365" y="1172" class="body">parse_orbit_channels.v1</text>
+  <text x="1085" y="1172" class="small">control stream → frame / orbit structure</text>
+
+  <rect class="pill" x="140" y="1205" width="1320" height="50"/>
+  <text x="165" y="1237" class="mono">AK-ALG-03</text>
+  <text x="365" y="1237" class="body">reduce_orbit36.v1</text>
+  <text x="1112" y="1237" class="small">frame sums → residues mod 36</text>
+
+  <rect class="pill" x="140" y="1270" width="1320" height="50"/>
+  <text x="165" y="1302" class="mono">AK-ALG-04</text>
+  <text x="365" y="1302" class="body">emit_propagation_artifact.v1</text>
+  <text x="1040" y="1302" class="small">canonical structure → canonical artifact</text>
+
+  <!-- clock -->
+  <rect class="box" x="140" y="1385" width="1320" height="210"/>
+  <text x="800" y="1432" text-anchor="middle" class="layer-title">CLOCK LAYER</text>
+  <text x="800" y="1470" text-anchor="middle" class="body">deterministic logical clock</text>
+  <text x="800" y="1508" text-anchor="middle" class="mono">seed + law + input → tick progression → reproducible sequence</text>
+  <text x="800" y="1545" text-anchor="middle" class="small">rewind = recomputation · stream = ordered artifact emission</text>
+  <rect class="pill" x="560" y="1560" width="480" height="28"/>
+  <text x="800" y="1579" text-anchor="middle" class="chip">Coordinates truth, not physical duration</text>
+
+  <!-- math -->
+  <rect class="box" x="115" y="1660" width="1370" height="155"/>
+  <text x="800" y="1705" text-anchor="middle" class="layer-title">MATHEMATICAL LAW LAYER</text>
+  <text x="800" y="1740" text-anchor="middle" class="mono">B = [2,4,8,16,32,64,128,256] · T = 8 · W = 36</text>
+  <text x="800" y="1772" text-anchor="middle" class="body">orbit weighting: pattern = Σ residue_j × 36^j</text>
+  <text x="800" y="1802" text-anchor="middle" class="small">crystal invariant · deterministic closure</text>
+
+  <!-- bit domain -->
+  <rect class="box" x="200" y="1845" width="1200" height="40" style="rx:22"/>
+  <text x="800" y="1872" text-anchor="middle" class="layer-title" style="font-size:20px">BIT DOMAIN · UTF-EBCDIC control plane · 0x00–0x3B data digits · 0x1C–0x1F control operators · NUL / ESC literal handling</text>
+
+  <!-- arrows -->
+  <path class="flow" d="M800,325 L800,388"/>
+  <path class="flow" d="M800,610 L800,673"/>
+  <path class="flow" d="M800,895 L800,958"/>
+  <path class="flow" d="M800,1320 L800,1383"/>
+  <path class="flow" d="M800,1595 L800,1657"/>
+  <path class="flow" d="M800,1818 L800,1842"/>
+
+  <!-- side labels -->
+  <text x="848" y="357" class="small accent">canonical artifacts</text>
+  <text x="848" y="641" class="small accent">canonical form</text>
+  <text x="848" y="926" class="small accent">canonicalization</text>
+  <text x="848" y="1351" class="small accent">deterministic progression</text>
+  <text x="848" y="1627" class="small accent">mathematical law</text>
+  <text x="848" y="1835" class="small accent">bitstream</text>
+
+  <!-- footer rules -->
+  <text x="170" y="120" class="rule">Three rules</text>
+  <text x="290" y="120" class="small">1) Spec is normative  2) Reference implementation is illustrative  3) Artifacts are the verification boundary</text>
+</svg>

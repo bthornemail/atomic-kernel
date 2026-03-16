@@ -4,6 +4,17 @@ Deterministic replay substrate with mode-aware runtime laws, canonical hashing, 
 
 For full docs, start at [docs/README.md](./docs/README.md).
 
+## Architecture
+![Atomic Kernel Architecture](docs/assets/atomic-kernel-architecture.svg)
+
+One-sentence model:
+`Bits -> canonical algorithms -> deterministic clock -> canonical artifact -> dual identity -> platform adapters`
+
+Three rules:
+1. The specification is normative: `AK-ALG-01..04` define canonical behavior.
+2. The reference implementation is illustrative: any implementation with the same canonical outputs is valid.
+3. Artifacts are the verification boundary: same canonical artifact + identity means semantic agreement.
+
 ## Quick Start
 ```bash
 ./ak all
