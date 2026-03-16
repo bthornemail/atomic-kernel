@@ -110,6 +110,7 @@ See [docs/api-reference.md](./docs/api-reference.md) for contracts and examples.
 - Normative implementation guidance: [docs/concepts.md](./docs/concepts.md)
 - Conformance contract: [docs/conformance.md](./docs/conformance.md)
 - Claim policy: [docs/publication-claims.md](./docs/publication-claims.md)
+- Release notes: [v1.0.0](./RELEASE_NOTES.md)
 
 ## Author Intent
 This project is published as a serious, good-faith attempt to address a shared systems problem with deterministic, testable methods.
