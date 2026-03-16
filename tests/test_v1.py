@@ -12,6 +12,7 @@ from urllib.request import Request, urlopen
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from api_server import run_server
+from atomic_kernel import canonicalize
 from authority import authorize
 from aztec_bundle import build_bundle, recover_bundle
 from canonical import canonical_hash, digest_bytes, parse_tagged_digest
@@ -141,6 +142,12 @@ class V1Tests(unittest.TestCase):
             self.assertEqual(artifact["message"], "Hello")
             self.assertIn("stream_digest", artifact)
             self.assertIn("payload_digest", manifest)
+
+    def test_package_canonicalize(self):
+        artifact = canonicalize("Hello", tick=8)
+        self.assertEqual(artifact["message"], "Hello")
+        self.assertIn("stream_digest", artifact)
+        self.assertIn("replay_hash", artifact)
 
 
 class APITests(unittest.TestCase):

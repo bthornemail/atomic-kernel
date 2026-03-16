@@ -8,43 +8,18 @@ import json
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from atomic_kernel import canonicalize
 from aztec_bundle import build_bundle
 from canonical import DEFAULT_HASH_ALGO
-from identity import ObjectChain
-from replay_engine import replay_artifact
-from stream_sign_value import canonicalize_stream
 
 VENV_PY = ROOT / ".venv" / "bin" / "python"
 RENDERER = ROOT / "render_aztec_payload.py"
-
-
-def _cp_to_digits(cp: int) -> List[int]:
-    if cp == 0:
-        return [0]
-    out: List[int] = []
-    n = cp
-    while n > 0:
-        n, d = divmod(n, 60)
-        out.append(d)
-    return list(reversed(out))
-
-
-def encode_message(message: str) -> Dict[str, Any]:
-    digits: List[int] = []
-    for ch in message:
-        cp = ord(ch)
-        digits.extend(_cp_to_digits(cp))
-        digits.append(0x1C)  # FS separator
-    if digits and digits[-1] == 0x1C:
-        digits.pop()
-    payload = "".join(chr(d) for d in digits)
-    return {"digits": digits, "payload": payload}
 
 
 def render_chunk_png(chunk_payload: Dict[str, Any], out_path: Path) -> bool:
@@ -70,29 +45,7 @@ def build_message_artifact(
     tick: int = 8,
     hash_algo: str = DEFAULT_HASH_ALGO,
 ) -> Dict[str, Any]:
-    enc = encode_message(message)
-    stream = canonicalize_stream(enc["payload"], hash_algo=hash_algo)
-    seed = (int(stream.pattern_number) % 65535) + 1
-
-    chain = ObjectChain(seed, hash_algo=hash_algo)
-    rec = chain.step(tick)
-    replay = replay_artifact("kernel", 16, seed, 8, hash_algo=hash_algo)
-
-    return {
-        "message": message,
-        "control_digits": enc["digits"],
-        "canonicalization": stream.canonicalization,
-        "hash_algo": hash_algo,
-        "stream_digest": stream.stream_digest,
-        "pattern_number": stream.pattern_number,
-        "frame_values": stream.frame_values,
-        "seed_hex": f"0x{seed:04X}",
-        "tick": tick,
-        "sid": rec["sid"],
-        "clock": rec["clock"],
-        "oid": rec["oid"],
-        "replay_hash": replay.replay_hash,
-    }
+    return canonicalize(message, tick=tick, hash_algo=hash_algo)
 
 
 def main() -> int:

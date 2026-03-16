@@ -82,6 +82,14 @@ Encode each chunk JSON as one Aztec symbol with your encoder of choice, then sca
 - Static browser demo: open `message-demo-static.html` directly from disk.
 - Optional HTTP wrapper: `./ak serve` for API-backed integrations and rendering endpoints.
 
+## Python API
+```python
+from atomic_kernel import canonicalize
+
+artifact = canonicalize("Hello, world")
+print(artifact["stream_digest"])
+```
+
 | Image | Contains | Scan |
 |---|---|---|
 | **Control Codes** | UTF-EBCDIC control-plane contract | ![control-codes](docs/assets/aztec-control-codes.png) |

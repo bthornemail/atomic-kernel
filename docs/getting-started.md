@@ -40,6 +40,12 @@ Static serverless demo: open `message-demo-static.html` directly, or use `http:/
 # Offline message artifact generation (no server)
 ./ak message-artifact --message "Hello, world" --outdir message-artifact
 
+# Package API (no server)
+python3 - <<'PY'
+from atomic_kernel import canonicalize
+print(canonicalize("Hello, world")["stream_digest"])
+PY
+
 # Create Aztec chunk payloads from a replay artifact
 ./ak aztec-pack --mode 16d --width 32 --seed 0x0B7406AC --steps 64 --outdir aztec-bundle
 
