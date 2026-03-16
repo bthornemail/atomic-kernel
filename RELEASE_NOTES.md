@@ -1,3 +1,48 @@
+# Atomic Kernel v1.1.0
+
+Release date: 2026-03-15  
+Status: certified milestone - proof-checked deterministic artifact lane
+
+## Scope
+- Added a normative Coq companion module as a first-class artifact path:
+  - `coq/AtomicKernelCoq.v`
+  - `coq/_CoqProject`
+- Added fail-closed proof hygiene gate in Coq pipeline:
+  - rejects any `Admitted`
+  - rejects any `Axiom`
+  - requires `coqchk` success
+- Added Coq-derived artifact emission path using `vm_compute`:
+  - `scripts/coq_pipeline.py artifact`
+  - `./ak coq-artifact`
+- Added formal parity gate:
+  - `Print Assumptions` closure checks for core theorems
+  - Coq vs Python state-stream equality on locked vectors
+  - byte-for-byte golden artifact equality check
+  - command: `./ak coq-parity`
+- Added locked vectors and Coq-derived golden artifact:
+  - `coq/parity_vectors.json`
+  - `golden/coq/artifact-16-0x0001-8.json`
+- Added CI workflow enforcing deterministic tests + conformance + Coq parity.
+- `./ak verify` now includes Coq parity gate as part of release acceptance.
+
+## Verification Commands
+```bash
+./ak coq-verify
+./ak coq-artifact --width 16 --seed 0x0001 --steps 8 --coq-out coq-artifact/artifact.json
+./ak coq-parity
+./ak verify
+```
+
+Expected:
+- Coq module compiles and `coqchk` passes
+- Coq artifact emission succeeds with stable digest
+- theorem assumption checks report closed context
+- Coq/Python parity vectors match
+- golden artifact check passes byte-for-byte
+- full deterministic verification gate passes
+
+---
+
 # Atomic Kernel v1.0.1
 
 Release date: 2026-03-15  
