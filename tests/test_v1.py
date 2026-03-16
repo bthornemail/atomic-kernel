@@ -174,6 +174,23 @@ class APITests(unittest.TestCase):
         self.assertFalse(out["ok"])
         self.assertEqual(out["reason_code"], "INCOMPLETE_ESCAPE_SEQUENCE")
 
+    def test_aztec_render_endpoint(self):
+        out = self._post(
+            "/aztec/render",
+            {
+                "artifact": {
+                    "message": "hello",
+                    "stream_digest": "sha3_256:" + "0" * 64,
+                }
+            },
+        )
+        if out.get("ok"):
+            self.assertIn("images", out)
+            self.assertGreaterEqual(len(out["images"]), 1)
+            self.assertTrue(out["images"][0]["data_url"].startswith("data:image/png;base64,"))
+        else:
+            self.assertIn(out.get("reason_code"), {"RENDERER_UNAVAILABLE", "RENDER_FAILED"})
+
 
 if __name__ == "__main__":
     unittest.main()

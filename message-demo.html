@@ -64,6 +64,12 @@ button:hover{border-color:var(--accent)}
     <div class="k" style="margin-bottom:6px">Artifact JSON</div>
     <div id="json" class="mono">-</div>
   </div>
+
+  <div class="card">
+    <div class="k" style="margin-bottom:6px">Aztec Codes (Direct Render)</div>
+    <div id="aztec-meta" class="k" style="margin-bottom:8px">-</div>
+    <div id="aztec-images" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px"></div>
+  </div>
 </main>
 <script>
 let tick = 0;
@@ -145,6 +151,49 @@ async function run(){
       replay_hash: replay.replay_hash
     };
     document.getElementById('json').textContent = JSON.stringify(artifact, null, 2);
+
+    const az = await post('/aztec/render', {
+      artifact,
+      hash_algo: 'sha3_256',
+      chunk_bytes: 900,
+      ec_percent: 23,
+      module_size: 4,
+      border: 2
+    });
+    const azMeta = document.getElementById('aztec-meta');
+    const azImages = document.getElementById('aztec-images');
+    azImages.innerHTML = '';
+    if (az.ok){
+      azMeta.textContent = `bundle=${az.bundle_id} chunks=${az.total_chunks} payload=${az.payload_digest}`;
+      for (const img of az.images){
+        const box = document.createElement('div');
+        box.style.background = '#0a1220';
+        box.style.border = '1px solid var(--line)';
+        box.style.borderRadius = '8px';
+        box.style.padding = '8px';
+        const label = document.createElement('div');
+        label.className = 'k';
+        label.style.marginBottom = '6px';
+        label.textContent = `chunk ${img.index + 1}/${az.total_chunks}`;
+        const image = document.createElement('img');
+        image.src = img.data_url;
+        image.alt = `aztec-chunk-${img.index}`;
+        image.style.width = '100%';
+        image.style.background = '#fff';
+        image.style.borderRadius = '4px';
+        const dig = document.createElement('div');
+        dig.className = 'k';
+        dig.style.marginTop = '6px';
+        dig.textContent = img.chunk_digest;
+        box.appendChild(label);
+        box.appendChild(image);
+        box.appendChild(dig);
+        azImages.appendChild(box);
+      }
+    } else {
+      azMeta.textContent = `Aztec render unavailable: ${az.reason_code || 'UNKNOWN'}`;
+    }
+
     status.textContent = 'verified via API';
     status.className = 'ok';
   } catch (err){

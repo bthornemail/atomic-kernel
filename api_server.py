@@ -1,9 +1,12 @@
 import json
+import subprocess
+import base64
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any, Dict, List
 
 from authority import authorize
+from aztec_bundle import build_bundle
 from canonical import DEFAULT_HASH_ALGO, canonical_hash
 from control_plane import CANONICALIZATION, validate_control_plane
 from identity import GENESIS, ObjectChain, sid
@@ -12,6 +15,8 @@ from replay_engine import replay_artifact
 from stream_sign_value import canonicalize_stream
 
 ROOT = Path(__file__).resolve().parent
+VENV_PY = ROOT / ".venv" / "bin" / "python"
+RENDERER = ROOT / "render_aztec_payload.py"
 
 
 def _json_response(handler: BaseHTTPRequestHandler, status: int, payload: Dict[str, Any]) -> None:
@@ -37,6 +42,37 @@ def _seed_int(v: Any) -> int:
     if isinstance(v, str):
         return int(v, 0)
     raise ValueError("invalid seed")
+
+
+def _render_aztec_png_data_url(
+    payload_text: str,
+    *,
+    ec_percent: int = 23,
+    module_size: int = 4,
+    border: int = 2,
+) -> str:
+    if not VENV_PY.exists() or not RENDERER.exists():
+        raise ValueError("RENDERER_UNAVAILABLE")
+    proc = subprocess.run(
+        [
+            str(VENV_PY),
+            str(RENDERER),
+            "--ec-percent",
+            str(ec_percent),
+            "--module-size",
+            str(module_size),
+            "--border",
+            str(border),
+        ],
+        input=payload_text.encode("utf-8"),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    if proc.returncode != 0 or not proc.stdout:
+        raise ValueError("RENDER_FAILED")
+    b64 = base64.b64encode(proc.stdout).decode("ascii")
+    return f"data:image/png;base64,{b64}"
 
 
 def _identity_verify(
@@ -217,6 +253,65 @@ class AtomicKernelHandler(BaseHTTPRequestHandler):
                 _json_response(self, 200, out)
             except Exception:
                 _json_response(self, 200, {"ok": False, "reason_code": "ORACLE_ERROR"})
+            return
+
+        if self.path == "/aztec/render":
+            try:
+                artifact = data.get("artifact")
+                if not isinstance(artifact, dict):
+                    _json_response(self, 200, {"ok": False, "reason_code": "INVALID_ARTIFACT"})
+                    return
+                hash_algo = str(data.get("hash_algo", DEFAULT_HASH_ALGO))
+                chunk_bytes = int(data.get("chunk_bytes", 900))
+                ec_percent = int(data.get("ec_percent", 23))
+                module_size = int(data.get("module_size", 4))
+                border = int(data.get("border", 2))
+
+                manifest, chunks = build_bundle(
+                    artifact,
+                    hash_algo=hash_algo,
+                    chunk_bytes=chunk_bytes,
+                )
+
+                images = []
+                for c in chunks:
+                    chunk_text = json.dumps(
+                        c,
+                        sort_keys=True,
+                        separators=(",", ":"),
+                        ensure_ascii=False,
+                    )
+                    data_url = _render_aztec_png_data_url(
+                        chunk_text,
+                        ec_percent=ec_percent,
+                        module_size=module_size,
+                        border=border,
+                    )
+                    images.append(
+                        {
+                            "index": c["index"],
+                            "order_index": c.get("order_index", c["index"]),
+                            "chunk_digest": c["chunk_digest"],
+                            "data_url": data_url,
+                        }
+                    )
+
+                _json_response(
+                    self,
+                    200,
+                    {
+                        "ok": True,
+                        "bundle_id": manifest["bundle_id"],
+                        "manifest_digest": manifest["manifest_digest"],
+                        "payload_digest": manifest["payload_digest"],
+                        "total_chunks": manifest["total_chunks"],
+                        "images": images,
+                    },
+                )
+            except ValueError as exc:
+                _json_response(self, 200, {"ok": False, "reason_code": str(exc)})
+            except Exception:
+                _json_response(self, 200, {"ok": False, "reason_code": "AZTEC_RENDER_ERROR"})
             return
 
         _json_response(self, 404, {"error": "NOT_FOUND"})

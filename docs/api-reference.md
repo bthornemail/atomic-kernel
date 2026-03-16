@@ -84,6 +84,20 @@ Compares Python output with Haskell oracle + fixture parity.
 { "width": 16, "seed": "0x06AC", "steps": 8, "hash_algo": "sha3_256" }
 ```
 
+## POST `/aztec/render`
+Renders Aztec PNG data URLs for canonical artifact chunks.
+
+```json
+{
+  "artifact": { "message": "hello", "stream_digest": "sha3_256:..." },
+  "hash_algo": "sha3_256",
+  "chunk_bytes": 900,
+  "ec_percent": 23,
+  "module_size": 4,
+  "border": 2
+}
+```
+
 ## Failure Codes (Examples)
 - Common: `UNKNOWN_HASH_ALGO`, `UNTAGGED_DIGEST`
 - Replay: `INVALID_MODE`, `INVALID_WIDTH_FOR_MODE`, `INVALID_STEPS`, `INVALID_SEED`
