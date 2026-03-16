@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from canonical import DEFAULT_HASH_ALGO
+from canonical import DEFAULT_HASH_ALGO, MATH_ID_LAW_VERSION, canonical_math_id
 from identity import ObjectChain
 from replay_engine import replay_artifact
 
@@ -40,4 +40,14 @@ def canonicalize(
         "clock": rec["clock"],
         "oid": rec["oid"],
         "replay_hash": replay.replay_hash,
+        "math_law_version": MATH_ID_LAW_VERSION,
+        "math_id_v2": canonical_math_id(
+            {
+                "message": message,
+                "control_digits": digits,
+                "pattern_number": c["pattern_number"],
+                "tick": tick,
+                "seed_hex": f"0x{seed:04X}",
+            }
+        ),
     }

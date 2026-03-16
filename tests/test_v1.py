@@ -15,7 +15,7 @@ from api_server import run_server
 from atomic_kernel import canonicalize
 from authority import authorize
 from aztec_bundle import build_bundle, recover_bundle
-from canonical import canonical_hash, digest_bytes, parse_tagged_digest
+from canonical import canonical_hash, canonical_math_id, digest_bytes, parse_tagged_digest
 from control_plane import validate_control_plane
 from replay_engine import replay_artifact
 from stream_sign_value import (
@@ -50,6 +50,14 @@ class V1Tests(unittest.TestCase):
         self.assertNotEqual(h1, h2)
         with self.assertRaises(ValueError):
             canonical_hash(payload, hash_algo="blake3")
+
+    def test_math_id_v2_determinism(self):
+        a = canonical_math_id({"x": 1, "y": [2, 3]})
+        b = canonical_math_id({"y": [2, 3], "x": 1})
+        c = canonical_math_id({"x": 2, "y": [2, 3]})
+        self.assertEqual(a, b)
+        self.assertNotEqual(a, c)
+        self.assertTrue(a.startswith("math_v2:"))
 
     def test_16d_rejects_forbidden_4bit(self):
         a = replay_artifact("16d", 16, 0x0001, 1)
@@ -148,6 +156,7 @@ class V1Tests(unittest.TestCase):
         self.assertEqual(artifact["message"], "Hello")
         self.assertIn("stream_digest", artifact)
         self.assertIn("replay_hash", artifact)
+        self.assertIn("math_id_v2", artifact)
 
 
 class APITests(unittest.TestCase):
@@ -175,6 +184,8 @@ class APITests(unittest.TestCase):
         self.assertEqual(a["canonical_json"], b["canonical_json"])
         self.assertEqual(a["hash_algo"], "sha3_256")
         self.assertIn("digest", a)
+        self.assertIn("math_id_v2", a)
+        self.assertEqual(a["math_id_v2"], b["math_id_v2"])
 
     def test_hash_algo_unknown_fail_closed(self):
         out = self._post("/control-plane/validate", {"mode": "kernel", "hash_algo": "bad", "payload": "a"})

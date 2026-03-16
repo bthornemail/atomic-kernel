@@ -4,6 +4,7 @@ from typing import Any
 
 DEFAULT_HASH_ALGO = "sha3_256"
 SUPPORTED_HASH_ALGOS = {"sha256", "sha3_256"}
+MATH_ID_LAW_VERSION = "math-id-v2"
 
 
 def canonical_json_bytes(payload: Any) -> bytes:
@@ -36,6 +37,39 @@ def digest_text(text: str, hash_algo: str = DEFAULT_HASH_ALGO) -> str:
 
 def canonical_hash(payload: Any, hash_algo: str = DEFAULT_HASH_ALGO) -> str:
     return digest_bytes(canonical_json_bytes(payload), hash_algo=hash_algo)
+
+
+def _to_base36(n: int) -> str:
+    if n == 0:
+        return "0"
+    chars = "0123456789abcdefghijklmnopqrstuvwxyz"
+    out = []
+    x = n
+    while x > 0:
+        x, r = divmod(x, 36)
+        out.append(chars[r])
+    return "".join(reversed(out))
+
+
+def math_id_bytes(data: bytes) -> str:
+    """
+    Hash-free deterministic identity.
+    Encodes bytes as a base-257 polynomial with +1 digit shift to preserve zeros.
+    """
+    acc = 0
+    mult = 1
+    for b in data:
+        acc += (int(b) + 1) * mult
+        mult *= 257
+    return f"math_v2:{len(data)}:{_to_base36(acc)}"
+
+
+def math_id_text(text: str) -> str:
+    return math_id_bytes(text.encode("utf-8"))
+
+
+def canonical_math_id(payload: Any) -> str:
+    return math_id_bytes(canonical_json_bytes(payload))
 
 
 def parse_tagged_digest(tagged: str) -> tuple[str, str]:

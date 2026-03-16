@@ -198,6 +198,8 @@ class AtomicKernelHandler(BaseHTTPRequestHandler):
                     "seed_hex": artifact.seed_hex,
                     "steps": artifact.steps,
                     "replay_hash": artifact.replay_hash,
+                    "math_law_version": artifact.math_law_version,
+                    "math_id_v2": artifact.math_id_v2,
                     "canonical_json": artifact.canonical_json,
                 },
             )

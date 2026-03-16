@@ -1,7 +1,14 @@
 from dataclasses import dataclass
 from typing import Dict, List, Tuple
 
-from canonical import DEFAULT_HASH_ALGO, SUPPORTED_HASH_ALGOS, canonical_hash, canonical_json_text
+from canonical import (
+    DEFAULT_HASH_ALGO,
+    MATH_ID_LAW_VERSION,
+    SUPPORTED_HASH_ALGOS,
+    canonical_hash,
+    canonical_json_text,
+    canonical_math_id,
+)
 from kernel import replay as kernel_replay
 
 SUPPORTED_MODES = {"kernel", "16d"}
@@ -20,6 +27,8 @@ class ReplayArtifact:
     digest: str
     states: List[Dict[str, object]]
     replay_hash: str
+    math_law_version: str
+    math_id_v2: str
     canonical_json: str
 
     def as_dict(self) -> Dict[str, object]:
@@ -33,6 +42,8 @@ class ReplayArtifact:
             "digest": self.digest,
             "states": self.states,
             "replay_hash": self.replay_hash,
+            "math_law_version": self.math_law_version,
+            "math_id_v2": self.math_id_v2,
             "canonical_json": self.canonical_json,
         }
 
@@ -147,6 +158,8 @@ def replay_artifact(
             digest=digest,
             states=[],
             replay_hash=digest,
+            math_law_version=MATH_ID_LAW_VERSION,
+            math_id_v2=canonical_math_id(payload),
             canonical_json=canonical_json_text(payload),
         )
 
@@ -171,6 +184,8 @@ def replay_artifact(
             digest=digest,
             states=[],
             replay_hash=digest,
+            math_law_version=MATH_ID_LAW_VERSION,
+            math_id_v2=canonical_math_id(payload),
             canonical_json=canonical_json_text(payload),
         )
 
@@ -236,5 +251,7 @@ def replay_artifact(
         digest=digest,
         states=states,
         replay_hash=digest,
+        math_law_version=MATH_ID_LAW_VERSION,
+        math_id_v2=canonical_math_id(payload),
         canonical_json=canonical,
     )
