@@ -1,0 +1,7 @@
+[
+  {"width": 16, "seed": "0x0001", "steps": 8},
+  {"width": 32, "seed": "0x0B7406AC", "steps": 8},
+  {"width": 64, "seed": "0x0123456789ABCDEF", "steps": 8},
+  {"width": 128, "seed": "0x1", "steps": 8},
+  {"width": 256, "seed": "0x1", "steps": 8}
+]

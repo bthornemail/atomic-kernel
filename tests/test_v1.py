@@ -158,6 +158,49 @@ class V1Tests(unittest.TestCase):
         self.assertIn("replay_hash", artifact)
         self.assertIn("math_id_v2", artifact)
 
+    def test_coq_verify_pipeline(self):
+        rc = subprocess.run(
+            [sys.executable, "scripts/coq_pipeline.py", "verify"],
+            cwd=os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            check=False,
+        )
+        self.assertEqual(rc.returncode, 0)
+
+    def test_coq_artifact_pipeline(self):
+        with tempfile.TemporaryDirectory() as td:
+            out = Path(td) / "coq-artifact.json"
+            rc = subprocess.run(
+                [
+                    sys.executable,
+                    "scripts/coq_pipeline.py",
+                    "artifact",
+                    "--width",
+                    "16",
+                    "--seed",
+                    "0x0001",
+                    "--steps",
+                    "8",
+                    "--out",
+                    str(out),
+                ],
+                cwd=os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                check=False,
+            )
+            self.assertEqual(rc.returncode, 0)
+            payload = json.loads(out.read_text(encoding="utf-8"))
+            self.assertEqual(payload["width"], 16)
+            self.assertEqual(payload["steps"], 8)
+            self.assertEqual(len(payload["states"]), 8)
+            self.assertTrue(payload["artifact_digest"].startswith("sha3_256:"))
+
+    def test_coq_parity_gate(self):
+        rc = subprocess.run(
+            [sys.executable, "scripts/coq_parity.py", "check"],
+            cwd=os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            check=False,
+        )
+        self.assertEqual(rc.returncode, 0)
+
 
 class APITests(unittest.TestCase):
     @classmethod
