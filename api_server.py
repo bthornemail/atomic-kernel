@@ -134,6 +134,22 @@ class AtomicKernelHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(html)
             return
+        if self.path in {"/message-demo-static"}:
+            html = (ROOT / "message-demo-static.html").read_bytes()
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(html)))
+            self.end_headers()
+            self.wfile.write(html)
+            return
+        if self.path == "/js/atomic-kernel.js":
+            js = (ROOT / "js" / "atomic-kernel.js").read_bytes()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/javascript; charset=utf-8")
+            self.send_header("Content-Length", str(len(js)))
+            self.end_headers()
+            self.wfile.write(js)
+            return
         _json_response(self, 404, {"error": "NOT_FOUND"})
 
     def do_POST(self) -> None:

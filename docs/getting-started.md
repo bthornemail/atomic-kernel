@@ -18,6 +18,8 @@ cd atomic-kernel
 ```
 
 Open the dashboard at `http://127.0.0.1:8080`.
+API-backed message demo: `http://127.0.0.1:8080/message-demo`  
+Static serverless demo: open `message-demo-static.html` directly, or use `http://127.0.0.1:8080/message-demo-static`.
 
 ## What You Should See
 - `/replay` and `/replay/hash` return deterministic artifacts with tagged digests (default `sha3_256:`).
@@ -34,6 +36,9 @@ Open the dashboard at `http://127.0.0.1:8080`.
 
 # Verify, then start server
 ./ak all
+
+# Offline message artifact generation (no server)
+./ak message-artifact --message "Hello, world" --outdir message-artifact
 
 # Create Aztec chunk payloads from a replay artifact
 ./ak aztec-pack --mode 16d --width 32 --seed 0x0B7406AC --steps 64 --outdir aztec-bundle

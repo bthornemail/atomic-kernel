@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Atomic Kernel Message Demo (Static)</title>
+<style>
+:root{--bg:#0c1119;--panel:#151f2e;--line:#2b4061;--ink:#e7eef8;--muted:#9db1cc;--accent:#4dd5b0}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 10% 0%,#1d3150,var(--bg));color:var(--ink);font-family:Consolas,Monaco,monospace}
+main{max-width:920px;margin:0 auto;padding:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px}
+textarea,input,button{font:inherit;color:var(--ink);background:#0b1626;border:1px solid var(--line);border-radius:8px;padding:8px}
+textarea{width:100%;min-height:110px}
+button{cursor:pointer;background:#153252}
+.rows{display:grid;grid-template-columns:190px 1fr;gap:8px 12px}
+.k{color:var(--muted)}
+.v{word-break:break-all}
+.mono{white-space:pre-wrap;background:#0a1220;border:1px solid var(--line);border-radius:8px;padding:10px;color:#b8c9e1;font-size:.82rem;max-height:300px;overflow:auto}
+</style>
+<script src="js/atomic-kernel.js"></script>
+</head>
+<body>
+<main>
+  <div class="card">
+    <h2 style="margin:0 0 8px">Atomic Kernel Message Demo (Serverless)</h2>
+    <div class="k" style="margin-bottom:8px">No server calls. Runs in-browser with local JavaScript algorithms.</div>
+    <textarea id="msg">Hello, world!</textarea>
+    <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
+      <button id="run">Transform</button>
+      <label class="k">Tick <input id="tick" type="number" min="1" value="8" style="width:70px"></label>
+      <span class="k" id="status">idle</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="rows">
+      <div class="k">Message</div><div class="v" id="m-msg">-</div>
+      <div class="k">Control Digits</div><div class="v" id="m-codes">-</div>
+      <div class="k">Pattern Number</div><div class="v" id="m-pattern">-</div>
+      <div class="k">Frame Values</div><div class="v" id="m-frames">-</div>
+      <div class="k">Digest</div><div class="v" id="m-digest">-</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="k" style="margin-bottom:6px">Artifact JSON</div>
+    <div class="mono" id="json">-</div>
+  </div>
+
+  <div class="card">
+    <div class="k">Aztec note: static browser mode does not include an in-browser Aztec encoder in this repo.</div>
+    <div class="k">Use <code>./ak message-artifact --message "..." --outdir ...</code> to render chunk PNGs locally.</div>
+  </div>
+</main>
+<script>
+function set(id,v){document.getElementById(id).textContent=v;}
+
+async function run(){
+  const status = document.getElementById('status');
+  status.textContent = 'running...';
+  try {
+    const msg = document.getElementById('msg').value;
+    const tick = Number(document.getElementById('tick').value || 8);
+    const artifact = await AtomicKernel.buildMessageArtifact(msg, tick);
+    set('m-msg', msg || '(empty)');
+    set('m-codes', JSON.stringify(artifact.control_digits));
+    set('m-pattern', String(artifact.pattern_number));
+    set('m-frames', JSON.stringify(artifact.frame_values));
+    set('m-digest', artifact.stream_digest);
+    document.getElementById('json').textContent = JSON.stringify(artifact, null, 2);
+    status.textContent = 'done';
+  } catch (e){
+    status.textContent = 'error: ' + e.message;
+  }
+}
+
+document.getElementById('run').addEventListener('click', run);
+run();
+</script>
+</body>
+</html>

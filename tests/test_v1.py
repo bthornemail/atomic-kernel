@@ -1,9 +1,12 @@
 import json
 import os
+import subprocess
 import sys
 import threading
 import time
+import tempfile
 import unittest
+from pathlib import Path
 from urllib.request import Request, urlopen
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -114,6 +117,30 @@ class V1Tests(unittest.TestCase):
         self.assertIn("descriptor_parity", manifest)
         self.assertEqual(manifest["descriptor_parity"]["chunk_count"], manifest["total_chunks"])
         self.assertTrue(all("order_index" in c for c in chunks))
+
+    def test_message_artifact_script(self):
+        with tempfile.TemporaryDirectory() as td:
+            outdir = Path(td) / "out"
+            rc = subprocess.run(
+                [
+                    sys.executable,
+                    "scripts/message_artifact.py",
+                    "--message",
+                    "Hello",
+                    "--outdir",
+                    str(outdir),
+                    "--tick",
+                    "8",
+                ],
+                cwd=os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                check=False,
+            )
+            self.assertEqual(rc.returncode, 0)
+            artifact = json.loads((outdir / "artifact.json").read_text(encoding="utf-8"))
+            manifest = json.loads((outdir / "manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual(artifact["message"], "Hello")
+            self.assertIn("stream_digest", artifact)
+            self.assertIn("payload_digest", manifest)
 
 
 class APITests(unittest.TestCase):

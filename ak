@@ -6,6 +6,7 @@ Usage:
   ./ak serve        # serve API + dashboard
   ./ak verify       # run tests + conformance gate
   ./ak all          # verify then serve
+  ./ak message-artifact # offline message -> artifact + chunks (+ optional PNGs)
   ./ak aztec-pack   # create Aztec chunk bundle from replay artifact
   ./ak aztec-proof  # create control/algorithms/full proof bundles
   ./ak aztec-images # render README PNGs from proof bundles
@@ -51,7 +52,7 @@ def main() -> int:
         "command",
         nargs="?",
         default="serve",
-        choices=["serve", "verify", "all", "aztec-pack", "aztec-proof", "aztec-images", "aztec-unpack"],
+        choices=["serve", "verify", "all", "message-artifact", "aztec-pack", "aztec-proof", "aztec-images", "aztec-unpack"],
         help="serve, verify, run all, or use Aztec bundle pack/unpack",
     )
     parser.add_argument("--mode", default="16d", choices=["kernel", "16d"])
@@ -69,12 +70,27 @@ def main() -> int:
     parser.add_argument("--proof-dir", default="aztec-proof")
     parser.add_argument("--indir", default="aztec-bundle")
     parser.add_argument("--output", default="aztec-bundle/recovered.json")
+    parser.add_argument("--message", default="Hello, world!")
+    parser.add_argument("--tick", type=int, default=8)
     args = parser.parse_args()
 
     if args.command == "serve":
         return cmd_serve()
     if args.command == "verify":
         return cmd_verify()
+    if args.command == "message-artifact":
+        return run(
+            [
+                sys.executable,
+                "scripts/message_artifact.py",
+                "--message",
+                args.message,
+                "--outdir",
+                args.outdir,
+                "--tick",
+                str(args.tick),
+            ]
+        )
     if args.command == "aztec-pack":
         return run(
             [

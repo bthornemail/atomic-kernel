@@ -11,6 +11,7 @@ For full docs, start at [docs/README.md](./docs/README.md).
 
 Open dashboard: `http://127.0.0.1:8080`
 Message demo: `http://127.0.0.1:8080/message-demo`
+Static message demo: `message-demo-static.html` (open directly) or `http://127.0.0.1:8080/message-demo-static`
 
 ## What Is Implemented
 - Mode-aware replay: `mode=kernel` and `mode=16d`
@@ -42,6 +43,9 @@ Evidence:
 # Verify, then start server
 ./ak all
 
+# Offline message -> artifact + chunks (+ optional chunk PNG render)
+./ak message-artifact --message "Hello, world" --outdir message-artifact
+
 # Build scan-ready Aztec chunk payloads from replay artifact
 ./ak aztec-pack --mode 16d --width 32 --seed 0x0B7406AC --steps 64 --outdir aztec-bundle
 
@@ -72,6 +76,11 @@ Each set contains:
 - `chunks.ndjson` (line-delimited chunk payloads for batch encoding)
 
 Encode each chunk JSON as one Aztec symbol with your encoder of choice, then scan/decode back to JSON and run `./ak aztec-unpack` to verify reconstruction and digest integrity.
+
+## Serverless Modes
+- Offline CLI: `./ak message-artifact --message "..." --outdir ...`
+- Static browser demo: open `message-demo-static.html` directly from disk.
+- Optional HTTP wrapper: `./ak serve` for API-backed integrations and rendering endpoints.
 
 | Image | Contains | Scan |
 |---|---|---|
