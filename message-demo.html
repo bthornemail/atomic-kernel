@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Atomic Kernel Message Demo</title>
+<style>
+:root{
+  --bg:#0a0f17;
+  --panel:#131c2a;
+  --line:#2a3e5f;
+  --ink:#e8eff8;
+  --muted:#9cb0cb;
+  --accent:#50d6b2;
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 10% 0%,#1b2d47,var(--bg));color:var(--ink);font-family:Consolas,Monaco,monospace}
+main{max-width:980px;margin:0 auto;padding:18px}
+h1{margin:0 0 10px;font-size:1.2rem}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px}
+textarea,input,button{font:inherit;color:var(--ink);background:#0b1524;border:1px solid var(--line);border-radius:8px;padding:8px}
+textarea{width:100%;min-height:110px;resize:vertical}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+button{cursor:pointer;background:#143049}
+button:hover{border-color:var(--accent)}
+.rows{display:grid;grid-template-columns:190px 1fr;gap:8px 12px}
+.k{color:var(--muted)}
+.v{word-break:break-all}
+.mono{white-space:pre-wrap;background:#0a1220;border:1px solid var(--line);border-radius:8px;padding:10px;color:#b8c9e1;font-size:.82rem;max-height:260px;overflow:auto}
+.ok{color:var(--accent)}
+.err{color:#ff7b7b}
+</style>
+</head>
+<body>
+<main>
+  <h1>Atomic Kernel Message Demo (Content First)</h1>
+  <div class="card">
+    <div class="k" style="margin-bottom:8px">Type content. The page encodes it to control-stream digits and requests canonical artifacts from the API.</div>
+    <textarea id="msg">Hello, world!</textarea>
+    <div class="controls" style="margin-top:10px">
+      <button id="transform">Transform</button>
+      <span class="k">Tick step:</span>
+      <input id="tickStep" type="number" min="1" value="8" style="width:80px">
+      <span id="status" class="k">idle</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="rows">
+      <div class="k">Message</div><div class="v" id="m-msg">-</div>
+      <div class="k">Control Digits</div><div class="v" id="m-codes">-</div>
+      <div class="k">Stream Digest</div><div class="v" id="m-digest">-</div>
+      <div class="k">Pattern Number</div><div class="v" id="m-pattern">-</div>
+      <div class="k">Frame Values</div><div class="v" id="m-frames">-</div>
+      <div class="k">Sender SID</div><div class="v" id="m-sid">-</div>
+      <div class="k">Tick</div><div class="v" id="m-tick">-</div>
+      <div class="k">Clock</div><div class="v" id="m-clock">-</div>
+      <div class="k">OID</div><div class="v" id="m-oid">-</div>
+      <div class="k">Replay Hash</div><div class="v" id="m-replay">-</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="k" style="margin-bottom:6px">Artifact JSON</div>
+    <div id="json" class="mono">-</div>
+  </div>
+</main>
+<script>
+let tick = 0;
+
+function cpToDigits(cp){
+  if (cp === 0) return [0];
+  const out = [];
+  let n = cp;
+  while (n > 0){
+    out.push(n % 60);
+    n = Math.floor(n / 60);
+  }
+  return out.reverse();
+}
+
+function encodeMessageToControl(msg){
+  const digits = [];
+  for (const ch of msg){
+    const cp = ch.codePointAt(0);
+    const arr = cpToDigits(cp);
+    digits.push(...arr);
+    digits.push(0x1C); // FS separator between codepoint digit groups
+  }
+  if (digits.length && digits[digits.length - 1] === 0x1C) digits.pop();
+  const payload = String.fromCharCode(...digits);
+  return {digits, payload};
+}
+
+async function post(path, payload){
+  const r = await fetch(path, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+  return await r.json();
+}
+
+function set(id, value){ document.getElementById(id).textContent = value; }
+
+async function run(){
+  const status = document.getElementById('status');
+  try {
+    status.textContent = 'running...';
+    status.className = 'k';
+    const msg = document.getElementById('msg').value;
+    const step = Math.max(1, Number(document.getElementById('tickStep').value || 8));
+    tick += step;
+
+    const enc = encodeMessageToControl(msg);
+    const stream = await post('/stream/canonicalize', {payload: enc.payload, hash_algo: 'sha3_256'});
+    if (!stream.ok && stream.reason_code) throw new Error(stream.reason_code);
+
+    const seed = (Number(stream.pattern_number) % 65535) + 1;
+    const idv = await post('/identity/verify', {mode:'kernel', seed, ticks:[tick], hash_algo:'sha3_256'});
+    if (!idv.ok) throw new Error(idv.reason_code || 'IDENTITY_VERIFY_FAILED');
+    const rec = (idv.records || [])[0] || {};
+
+    const replay = await post('/replay/hash', {mode:'kernel', width:16, seed, steps:8, hash_algo:'sha3_256'});
+
+    set('m-msg', msg || '(empty)');
+    set('m-codes', JSON.stringify(enc.digits));
+    set('m-digest', stream.stream_digest || '-');
+    set('m-pattern', String(stream.pattern_number));
+    set('m-frames', JSON.stringify(stream.frame_values || []));
+    set('m-sid', idv.sid || '-');
+    set('m-tick', String(tick));
+    set('m-clock', rec.clock || '-');
+    set('m-oid', rec.oid || '-');
+    set('m-replay', replay.replay_hash || '-');
+
+    const artifact = {
+      message: msg,
+      control_digits: enc.digits,
+      canonicalization: stream.canonicalization,
+      stream_digest: stream.stream_digest,
+      pattern_number: stream.pattern_number,
+      frame_values: stream.frame_values,
+      seed_hex: '0x' + seed.toString(16).toUpperCase().padStart(4, '0'),
+      tick,
+      sid: idv.sid,
+      clock: rec.clock,
+      oid: rec.oid,
+      replay_hash: replay.replay_hash
+    };
+    document.getElementById('json').textContent = JSON.stringify(artifact, null, 2);
+    status.textContent = 'verified via API';
+    status.className = 'ok';
+  } catch (err){
+    status.textContent = 'error: ' + err.message;
+    status.className = 'err';
+  }
+}
+
+document.getElementById('transform').addEventListener('click', run);
+run();
+</script>
+</body>
+</html>

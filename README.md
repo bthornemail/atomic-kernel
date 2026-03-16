@@ -10,6 +10,7 @@ For full docs, start at [docs/README.md](./docs/README.md).
 ```
 
 Open dashboard: `http://127.0.0.1:8080`
+Message demo: `http://127.0.0.1:8080/message-demo`
 
 ## What Is Implemented
 - Mode-aware replay: `mode=kernel` and `mode=16d`
