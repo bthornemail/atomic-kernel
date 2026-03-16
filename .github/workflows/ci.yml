@@ -1,0 +1,33 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Coq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y coq
+
+      - name: Run deterministic test suites
+        run: |
+          python3 tests/test_all.py
+          python3 tests/test_v1.py
+          python3 conformance.py
+
+      - name: Run Coq parity gate
+        run: |
+          ./ak coq-parity
