@@ -16,6 +16,17 @@ Three rules:
 2. The reference implementation is illustrative.
 3. Canonical artifacts are the verification boundary.
 
+Normative layers:
+- Mathematical Law
+- Canonical Algorithms
+- Identity Rules
+- Artifact Format
+
+Non-normative layers:
+- Reference implementation
+- Platform adapters
+- Visualization / APIs
+
 ## Start Here
 - [Getting Started](./getting-started.md)
 - [API Reference](./api-reference.md)

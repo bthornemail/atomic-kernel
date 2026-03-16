@@ -15,6 +15,17 @@ Three rules:
 2. The reference implementation is illustrative: any implementation with the same canonical outputs is valid.
 3. Artifacts are the verification boundary: same canonical artifact + identity means semantic agreement.
 
+Normative layers:
+- Mathematical Law
+- Canonical Algorithms
+- Identity Rules
+- Artifact Format
+
+Non-normative layers:
+- Reference implementation
+- Platform adapters
+- Visualization / APIs
+
 ## Quick Start
 ```bash
 ./ak all
