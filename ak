@@ -5,6 +5,9 @@ Usage:
   ./ak              # serve API + dashboard
   ./ak serve        # serve API + dashboard
   ./ak verify       # run tests + conformance gate
+  ./ak coq-verify   # compile + coqchk normative Coq module
+  ./ak coq-parity   # assumptions + Coq/Python vector parity + golden check
+  ./ak coq-artifact # compile/check and emit Coq-derived artifact JSON
   ./ak all          # verify then serve
   ./ak message-artifact # offline message -> artifact + chunks (+ optional PNGs)
   ./ak aztec-pack   # create Aztec chunk bundle from replay artifact
@@ -38,6 +41,7 @@ def cmd_verify() -> int:
         [sys.executable, "tests/test_all.py"],
         [sys.executable, "tests/test_v1.py"],
         [sys.executable, "conformance.py"],
+        [sys.executable, "scripts/coq_parity.py", "check"],
     ]
     for step in steps:
         rc = run(step)
@@ -52,7 +56,7 @@ def main() -> int:
         "command",
         nargs="?",
         default="serve",
-        choices=["serve", "verify", "all", "message-artifact", "aztec-pack", "aztec-proof", "aztec-images", "aztec-unpack"],
+        choices=["serve", "verify", "coq-verify", "coq-parity", "coq-artifact", "all", "message-artifact", "aztec-pack", "aztec-proof", "aztec-images", "aztec-unpack"],
         help="serve, verify, run all, or use Aztec bundle pack/unpack",
     )
     parser.add_argument("--mode", default="16d", choices=["kernel", "16d"])
@@ -72,12 +76,33 @@ def main() -> int:
     parser.add_argument("--output", default="aztec-bundle/recovered.json")
     parser.add_argument("--message", default="Hello, world!")
     parser.add_argument("--tick", type=int, default=8)
+    parser.add_argument("--coq-out", default="coq-artifact/artifact.json")
     args = parser.parse_args()
 
     if args.command == "serve":
         return cmd_serve()
     if args.command == "verify":
         return cmd_verify()
+    if args.command == "coq-verify":
+        return run([sys.executable, "scripts/coq_pipeline.py", "verify"])
+    if args.command == "coq-parity":
+        return run([sys.executable, "scripts/coq_parity.py", "check"])
+    if args.command == "coq-artifact":
+        return run(
+            [
+                sys.executable,
+                "scripts/coq_pipeline.py",
+                "artifact",
+                "--width",
+                str(args.width),
+                "--seed",
+                args.seed,
+                "--steps",
+                str(args.steps),
+                "--out",
+                args.coq_out,
+            ]
+        )
     if args.command == "message-artifact":
         return run(
             [

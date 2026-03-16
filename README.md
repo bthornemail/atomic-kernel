@@ -62,6 +62,16 @@ Evidence:
 
 # Full verification gate
 ./ak verify
+# (includes Coq parity gate and golden artifact equality)
+
+# Coq normative check (no Admitted/Axiom + coqchk)
+./ak coq-verify
+
+# Coq gate: Print Assumptions closure + Coq/Python parity + golden artifact
+./ak coq-parity
+
+# Emit Coq-derived replay artifact JSON
+./ak coq-artifact --width 16 --seed 0x0001 --steps 8 --coq-out coq-artifact/artifact.json
 
 # Verify, then start server
 ./ak all
